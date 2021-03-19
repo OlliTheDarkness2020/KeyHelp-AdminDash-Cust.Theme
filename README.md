@@ -18,6 +18,8 @@
 
 <li> Kleines Bugfix des TS3 Frameworks </li>
 
+<li> Änderung der Versionsnummervergabe </li>
+
 <li> Codebereinigung </li>
 </ul>
 
