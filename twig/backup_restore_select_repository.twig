@@ -1,0 +1,26 @@
+{% extends 'base/intern.twig' %}
+
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {% include 'includes/card_start.twig' %}
+
+        <form action="?page={{ _app.page }}&action=restore" method="post" autocomplete="off">
+            {{ forms.select_wrapped({
+                'label': repository,
+                'help': repository_restore_help,
+                'name': 'id',
+                'options': _repos,
+                'selected': _repo,
+                'is_required': true,
+            }) }}
+
+            {% include 'includes/cta.twig' with { '_back': { 'target': 'backup' }, '_confirm': { 'label': continue } } %}
+        </form>
+
+    {% include 'includes/card_end.twig' %}
+
+{% endblock %}

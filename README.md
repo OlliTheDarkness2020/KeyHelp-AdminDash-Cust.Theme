@@ -1,7 +1,30 @@
-KeyHelp-AdminDash-Cust.Theme
-KeyHelp Admin Dash
+<u> <b> KeyHelp Custom Admin Dash (Dev. Version) </b> </u>
 
-ACHTUNG: Das Theme für die Version 20+ findet Ihr unter: https://github.com/OlliTheDarkness2020/KeyHelp-AdminDash-Cust.Theme-OLD-
+<hr>
 
-KeyHelp Admin Dash Repo für die kommende 21.0
+<h2> <b> <u> Erstveröffentlichung für Dev (Version 21.0.1.0) </u> </b> </h2>
 
+<u> <b> 19.03.2021 - 03:32 Uhr </b> </u>
+
+<b> Dash Panel </b>
+<ul>
+<li> Anpassung für KeyHelp 21 </li>
+
+<li> Entfernung der Updateanzeige des Custom Dash </li>
+
+<li> Entfernung der Notfallabschaltung (Emergency Lock) </li>
+
+<li> JavaScript Funktionen des Themes abgetrennt </li>
+
+<li> Kleines Bugfix des TS3 Frameworks </li>
+
+<li> Änderung der Versionsnummervergabe </li>
+
+<li> Codebereinigung </li>
+</ul>
+
+<br>
+
+<b> <u> WICHTIG </u> </b>
+
+<b> BITTE DIE NEUE <u> setting.php </u> BENUTZEN ! </b>
