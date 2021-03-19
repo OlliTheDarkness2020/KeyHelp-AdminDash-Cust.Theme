@@ -1,0 +1,122 @@
+{% extends 'base/intern.twig' %}
+
+
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+	<div class="columns">
+        {# List backup features #}
+        <div class="column is-half">
+            {% include 'includes/card_start_stacked.twig' with { '_label': backup_features, '_icon': 'fas fa-project-diagram' } %}
+                <div class="content">
+                    <div>
+                        <h2 class="title is-6 has-margin-bottom-small">{{ create_backups }}</h2>
+                        <p>{{ create_backups_help|raw }}</p>
+
+                        <div class="buttons">
+                            {{ forms.button({
+                                'label': create_backup,
+                                'icon': 'fas fa-archive',
+                                'url': '#'
+                            }) }}
+
+                            {{ forms.button({
+                                'label': schedule_backups,
+                                'icon': 'fas fa-calendar-alt',
+                                'url': '#'
+                            }) }}
+                        </div>
+                    </div>
+
+                    <div class="has-margin-top-large">
+                        <h2 class="title is-6 has-margin-bottom-small">{{ restore_backup }}</h2>
+                        <p>{{ restore_backup_help|raw }}</p>
+
+                        {{ forms.button({
+                            'label': restore_backup,
+                            'icon': 'fas fa-history',
+                            'url': '?page=backup_restore&action=select_repository'
+                        }) }}
+                    </div>
+
+                    <div class="has-margin-top-large">
+                        <h2 class="title is-6 has-margin-bottom-small">{{ repository_management }}</h2>
+                        <p>{{ repository_management_help|raw }}</p>
+
+                        {{ forms.button({
+                            'label': repository_management,
+                            'icon': 'fas fa-folder-open',
+                            'url': '?page=backup_repository'
+                        }) }}
+                    </div>
+
+                    {% if not _whitelabel.is_hide_keyweb_ads %}
+                        <div class="columns has-margin-top-xlarge">
+                            <div class="column is-narrow">
+                                <a href="{{ _keydisc_url }}" target="_blank" rel="nofollow noopener noreferrer">
+                                    <img class="svg-keydisc" src="theme/otd/assets/img/{{ _app.theme.is_dark_mode ? 'dark/' }}keydisc.svg">
+                                </a>
+                            </div>
+                            <div class="column has-mobile-top-padding-none">
+                                {{ ad_keydisc_text|raw }}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% include 'includes/card_end_stacked.twig' %}
+
+            {% include 'includes/card_start_stacked.twig' with { '_label': background_info, '_icon': 'fas fa-info-circle', '_has_margin_top': true } %}
+                <p>{{ restic_help|raw }}</p>
+            {% include 'includes/card_end_stacked.twig' %}
+        </div>
+
+        {# Last actions #}
+        <div class="column is-half">
+            {% include 'includes/card_start_stacked.twig' with { '_label': latest_events, '_icon': 'fas fa-tasks' } %}
+
+                {% if _latest_events is empty %}
+                    <div class="has-text-centered has-text-grey">
+                        - {{ no_items_available }} -
+                    </div>
+                {% else %}
+
+                    {% for item in _latest_events %}
+
+                        <table class="table is-fullwidth">
+                            <tr>
+                                <th>
+                                    {{ item.operation }}
+                                </th>
+                                <td>
+                                    <a href="?page=backup_repository&action=edit&id={{ item.id_repo }}">{{ item.repo }}</a>
+                                </td>
+                                <td class="has-text-right">
+                                    {{ item.created_at }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    {{ item.status }}
+
+                                    ( {{ item.progress }} % )
+                                </td>
+                            </tr>
+                        </table>
+
+                    {% endfor %}
+
+                    {{ forms.button({
+                        'label': show_more,
+                        'id': 'app-btn-show-more',
+                    }) }}
+
+                {% endif %}
+
+            {% include 'includes/card_end_stacked.twig' %}
+        </div>
+
+    </div>
+{% endblock %}
