@@ -4,6 +4,30 @@
 
 <hr>
 
+<h2> <b> <u> (Release-Version) Änderungen 06.07.2021 (Version -) </u> </b> </h2>
+
+<b> Dash Panel </b>
+<ul>
+
+<li> - </li>
+
+</ul>
+
+<b> GitHub </b>
+<ul>
+
+<li> Strukturvorbereitung für KH-Panel 21.1 </li>
+
+</ul>
+
+<br>
+
+<b> <u> WICHTIG </u> </b>
+
+<b> BITTE DIE NEUE <u> setting.php </u> BENUTZEN ! </b>
+
+<hr>
+
 <h2> <b> <u> (Release-Version) Änderungen 19.03.2021 (Version 21.0.1) </u> </b> </h2>
 
 <b> Dash Panel </b>
