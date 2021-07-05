@@ -113,13 +113,25 @@ case "$1" in
   unset logpfade
 	;;
 
+  cleanup)
+  echo Entferne alte Logdaten ...
+  rm $logpfade/smart.log
+  rm $logpfade/raid.log
+  echo Entferne genutze Variablen ...
+  unset befehl
+  unset platten
+  unset array
+  unset zeit
+  unset logpfade
+	;;
+
   *)
 	echo "Fehlerhafte Eingabe: Nutzung wie folgt: /home/keyhelp/www/keyhelp/theme/otd/test.sh {smart|raid|both}" || true
 	unset befehl
 	unset platten
 	unset array
-        unset zeit
-        unset logpfade
+  unset zeit
+  unset logpfade
 	exit 1
 esac
 

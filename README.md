@@ -1,5 +1,24 @@
 <u> <b> KeyHelp Custom Admin Dash (Dev. Version) </b> </u>
 
+
+<hr>
+
+<h2> <b> <u> Änderungen 06.07.2021 ( DEV - Struktur vorbereitet ) </u> </b> </h2>
+
+<b> Dash Panel </b>
+<ul>
+
+<li> - </li>
+
+</ul>
+
+<b> GitHub </b>
+<ul>
+
+<li> Struktur - Vorbereitung für Panel Ver. 21.1 </li>
+
+</ul>
+
 <hr>
 
 <h2> <b> <u> Erstveröffentlichung für Dev (Version 21.0.1.0) </u> </b> </h2>

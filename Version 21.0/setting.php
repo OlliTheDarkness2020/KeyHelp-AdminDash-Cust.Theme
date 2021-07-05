@@ -1,22 +1,4 @@
 <?php
-
-/* Zusätzliche Einstellungen */
-
-	$pucheck	= 'false';	/* Für Panel Update Prüfung auf true setzen */
-	$elcheck	= 'false';	/* Für Entwickler Notfall Abschaltungsprüfung auf true setzen */
-
-/*
-Datenschutzhinweiß für Funktion $pucheck und $elcheck:
-	Für die Emergency Lock- und Update Prüfung stellt euer Server eine Verbindung zum Datenbank Server unter 136.243.88.171 her.
-	Dabei wird eure Server IP übertragen !
-	Diese Informationen werden in der Regel nicht gespeichert.
-	Sollte aus technisch notwendigen Gründen eine Speicherung erfolgen, wird diese nach max. 48 Stunden gelöscht.
-	Eine Weitergabe bzw. eine weitere Verarbeitung erfolgt durch 136.243.88.171 nicht.
-!! ACHTUNG !!
-	Für diese Funktionen (pucheck & elcheck) benötigen Sie Zugangsdaten.
-	Um diese zu erhalten , wenden Sie sich per PM im KeyHelp an OlliTheDarkness
-*/
-
 /*	Custom Block Anzeige Aktivierung (true)	/ Deaktivierung (false) */
 
 	$block_teamspeak 	= 'true';		// TeamSpeak Status
