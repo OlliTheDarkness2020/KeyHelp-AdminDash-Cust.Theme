@@ -4,6 +4,28 @@
 
 <hr>
 
+<h2> <b> <u> Änderungen 18.07.2021 ( Version 21.1.1 ) </u> </b> </h2>
+
+<b> Dash Panel </b>
+<ul>
+
+<li> Anpassung an KH Panel 21.1 </li>
+
+<li> Entfernung der DiskSpace Box und Funktionen ( <b>Bereits in KH integriert</b> ) </li>
+
+<li> Allgemeine Bereinigungen </li>
+
+</ul>
+
+<b> GitHub </b>
+<ul>
+
+<li> - </li>
+
+</ul>
+
+<hr>
+
 <h2> <b> <u> Änderungen 06.07.2021 ( - ) </u> </b> </h2>
 
 <b> Dash Panel </b>

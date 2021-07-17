@@ -326,22 +326,6 @@ $('column .card-header.app-is-collapsed').trigger('click');
       TemperaturAbfrage();
 
 
-//----------------------------------------------------------------------------------------------------------------------
-// OTD DiskSpace Status
-//----------------------------------------------------------------------------------------------------------------------
-
-    var DiskspaceDiv = $("#Diskspace");
-    function DiskspaceAbfrage(){
-      console.debug('(Diskspace Box) Abfrage ausgelöst.');
-        $.post('theme/otd/admin_dash_status.php?realtime=diskspace', {
-        }, function(DiskspaceData){
-           $(DiskspaceDiv).html(DiskspaceData);
-        });
-    };
-
-    DiskspaceAbfrage();
-
-
 //======================================================================================================================
 // OTD - AJAX Manual Modal (Datei)
 //======================================================================================================================

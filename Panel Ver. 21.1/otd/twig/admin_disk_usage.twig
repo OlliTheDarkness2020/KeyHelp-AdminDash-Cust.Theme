@@ -1,0 +1,234 @@
+{% extends 'base/intern.twig' %}
+
+
+
+{% block page_scripts %}
+    <script src="/theme/otd/assets/js/page_disk_usage.js?{{ _app.cache_control }}"></script>
+    <script>
+        var sortingColumn = '{{ _table_sorting[0].column }}'
+        var sortingOrder = '{{ _table_sorting[0].order }}'
+    </script>
+{% endblock %}
+
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    <input type="hidden" name="working_dir" value="{{ _working_dir }}">
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help_usage|raw }}
+    </p>
+
+    {# Viewing options #}
+    <div class="card has-margin-bottom-medium">
+        <div class="card-content">
+            <div class="level has-margin-bottom-none">
+                <div class="level-left">
+                    <div class="level-item">
+                        <strong>{{ viewing_options }}</strong>
+                    </div>
+                </div>
+                <div class="level-right">
+                    <div class="level-item">
+                        {#
+                            Only for JavaScript. To access data of these checkboxes,
+                            because they are in a dynamic tooltip element.
+                        #}
+                        <input type="hidden" name="gather_size" value="{{ _gather_size }}">
+                        <input type="hidden" name="gather_inodes" value="{{ _gather_inodes }}">
+
+                        {% set _viewing_options_menu %}
+                            <form action="?page={{ _app.page }}&sid={{ _app.sid }}&path={{ _working_dir|url_encode() }}" method="post">
+                                <input type="hidden" name="update_view_options" value="1">
+
+                                <div class="has-padding-small">
+                                    {{ forms.checkbox_wrapped({
+                                        'label': auto_collection,
+                                        'help': auto_collection_help,
+                                        'options': [
+                                            {
+                                                'label': collect_size,
+                                                'name': 'gather_size',
+                                                'value': '1',
+                                                'is_checked': _gather_size
+                                            },
+                                            {
+                                                'label': collect_inodes,
+                                                'name': 'gather_inodes',
+                                                'value': '1',
+                                                'is_checked': _gather_inodes
+                                            }
+                                        ]
+                                    }) }}
+
+                                    <div class="has-text-centered">
+                                        {{ forms.button({
+                                            'label': save,
+                                            'style': 'primary',
+                                        }) }}
+                                    </div>
+                                </div>
+                            </form>
+                        {% endset %}
+                        <div class="app-tooltip-click" data-tippy-content="{{ _viewing_options_menu|escape('html') }}">
+                            {{ forms.button({
+                                'label': customize_view,
+                                'type': 'button',
+                            }) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Path navigation #}
+    <div class="card has-margin-bottom-medium">
+        <div class="card-content">
+            <a href="?page={{ _app.page }}&path=/">
+                <span class="icon is-medium">
+                    <i class="fas fa-hdd"></i>
+                </span>
+            </a>
+            <ul class="horizontal-separated-list">
+                <li></li>
+                {% for item in _nav_items %}
+                    <li>
+                        {% if loop.last %}
+                            {{ item.name }}
+                        {% else %}
+                            <a href="?page={{ _app.page }}&path={{ item.path|url_encode() }}">
+                                {{ item.name }}
+                            </a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="card">
+        <div class="card-content">
+            {% if _usage_items is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'includes/scroll_table_container_buttons.twig' %}
+
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                        <thead>
+                            <tr>
+                                <th>
+                                    {{ name }}
+                                </th>
+                                <th class="has-text-right">
+                                    {{ size }}
+                                </th>
+                                <th class="has-text-right">
+                                    {{ utilization_share }}
+                                </th>
+                                <th class="has-text-right">
+                                    {{ inodes }}
+                                </th>
+                                <th class="has-text-right">
+                                    {{ utilization_share }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="app-container-content">
+                            {% for item in _usage_items %}
+                                {% if loop.first %}
+                                    {# Total column #}
+                                    <tr data-path="{{ item.path }}" class="is-selected" >
+                                        <td>
+                                            {{ total }}
+                                        </td>
+                                        {% for column_name in ['size', 'inodes'] %}
+                                            <td data-column="{{ column_name }}" class="has-text-right">
+                                                <a class="app-gather-data" href="javascript:void(0)">
+                                                    {{ refresh }}
+                                                </a>
+
+                                                <div class="app-loading" style="display: none">
+                                                    <span class="icon is-small has-text-grey-light">
+                                                        <i class="fas fa-sync-alt fa-spin"></i>
+                                                    </span>
+                                                </div>
+
+                                                <div class="app-value">
+                                                    <!-- filled by JS -->
+                                                </div>
+                                            </td>
+                                            <td></td>
+                                        {% endfor %}
+                                    </tr>
+                                    {# Move one folder up #}
+                                    <tr>
+                                        <td>
+                                            <a href="?page={{ _app.page }}&path={{ _parent_dir|url_encode() }}">
+                                                {% include 'includes/icon_files.twig' with { _type: 'folder_up' } %}
+                                                ..
+                                            </a>
+                                        </td>
+                                        <td colspan="42"></td>
+                                    </tr>
+                                {% else %}
+                                    <tr data-path="{{ item.path }}">
+                                        <td>
+                                            {% if item.is_dir %}
+                                                <a href="?page={{ _app.page }}&path={{ item.path|url_encode() }}">
+                                                    {% include 'includes/icon_files.twig' with { _type: 'dir' } %}
+                                                    {{ item.name }}
+                                                </a>
+                                            {% else %}
+                                                {% include 'includes/icon_files.twig' with { _type: 'file' } %}
+                                                {{ item.name }}
+                                            {% endif %}
+                                        </td>
+                                        {% for column_name in ['size', 'inodes'] %}
+                                            <td data-column="{{ column_name }}" class="has-text-right has-no-wrap">
+                                                <a class="app-gather-data" href="javascript:void(0)">
+                                                    {{ refresh }}
+                                                </a>
+
+                                                <div class="app-loading" style="display: none">
+                                                    <span class="icon is-small has-text-grey-light">
+                                                        <i class="fas fa-sync-alt fa-spin"></i>
+                                                    </span>
+                                                </div>
+
+                                                <div class="app-value">
+                                                    <!-- filled by JS -->
+                                                </div>
+                                            </td>
+
+                                            <td data-column="{{ column_name }}">
+                                                {{ macros.usage_indicator({
+                                                    'percent': 0,
+                                                }) }}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="42" class="has-text-grey-light">
+                                    {{ _usage_items|length }} {{ items_total }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

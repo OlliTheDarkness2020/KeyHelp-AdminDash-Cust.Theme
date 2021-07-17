@@ -1,0 +1,86 @@
+{% extends 'base/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script>
+        var snapshots = {{ _snapshots_json|raw }};
+    </script>
+
+    <script id="app-snapshot-template" type="text/x-handlebars-template">
+        <tr>
+            <td class="has-no-wrap">
+                <a href="?page={{ _app.page }}&action=restore&id={% verbatim %}{{ id }}{% endverbatim %}">
+                    {% verbatim %}{{ time }}{% endverbatim %}
+                </a>
+            </td>
+            <td>
+                {% verbatim %}{{ email_count }}{% endverbatim %}
+            </td>
+            <td>
+                {% verbatim %}{{ database_count }}{% endverbatim %}
+            </td>
+            <td>
+                {% verbatim %}{{ path_count }}{% endverbatim %}
+            </td>
+        </tr>
+	</script>
+
+    <script src="/theme/otd/assets/js/page_backup_restore.js?{{ _app.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {% include 'includes/card_start.twig' %}
+
+        {{ forms.select_wrapped({
+            'label': repository,
+            'help': repository_restore_help,
+            'name': 'repo_id',
+            'options': _repos,
+            'selected': _repo_selected,
+            'is_required': true,
+        }) }}
+
+        <div class="has-margin-top-large"></div>
+
+        {{ forms.label_wrapped({
+            'label': snapshots,
+            'help': snapshots_help
+        }) }}
+
+        {# No items #}
+        <div id="app-no-items-available" style="display: none">
+            <div class="has-text-centered has-text-grey">
+                - {{ no_items_available }} -
+            </div>
+        </div>
+
+        {# Item table #}
+        <div id="app-item-table" style="display: none">
+            <div class="table-container">
+                <table class="table is-fullwidth is-striped is-hoverable">
+                    <thead>
+                        <tr>
+                            <th>{{ created_at }}</th>
+                            <th>{{ email_accounts }}</th>
+                            <th>{{ databases }}</th>
+                            <th>{{ paths }}</th>
+                        </tr>
+                    </thead>
+                    <tbody id="app-snapshot-container">
+                    </tbody>
+                    <tfoot>
+                        <tr><td colspan="42"></td></tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        {% include 'includes/cta.twig' with { '_back': { 'target': 'backup' } } %}
+
+    {% include 'includes/card_end.twig' %}
+
+{% endblock %}

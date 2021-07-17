@@ -1,0 +1,28 @@
+{% apply spaceless %}
+
+    {% set icons = {
+        type_check:             { class: 'fas fa-chart-bar',            color: 'has-text-grey-light' },
+        type_prune:             { class: 'fas fa-trash-alt',            color: 'has-text-grey-light' },
+        type_backup:            { class: 'fas fa-archive',              color: 'has-text-info' },
+        type_restore:           { class: 'fas fa-history',              color: 'has-text-success' },
+
+        state_pending:          { class: 'fas fa-clock',                color: 'has-text-grey-light' },
+        state_processing:       { class: 'fas fa-wrench',               color: 'has-text-info' },
+        state_finished:         { class: 'fas fa-check',                color: 'has-text-success' },
+        state_finished_unclean: { class: 'fas fa-exclamation-triangle', color: 'has-text-warning' },
+        state_canceled:         { class: 'fas fa-exclamation-triangle', color: 'has-text-danger' },
+    } %}
+
+    {% if icons[_type] %}
+        {% set class = icons[_type].class %}
+        {% set color = icons[_type].color %}
+    {% else %}
+        {% set class = 'fas fa-question' %}
+        {% set color = 'has-text-grey-light' %}
+    {% endif %}
+
+    <span class="icon is-medium {{ color }}">
+        <i class="{{ class }}"></i>
+    </span>
+
+{% endapply %}

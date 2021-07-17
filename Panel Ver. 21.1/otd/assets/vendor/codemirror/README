@@ -1,0 +1,18 @@
+Version:    5.62.0
+
+Releases:   https://github.com/codemirror/CodeMirror/releases
+
+Homepage:   https://codemirror.net/
+
+Update:     Download from https://codemirror.net/, due the github release does not contain lib/codemirror.js.
+
+            Update all files in mode/.
+
+            Update all files in addon/display/:
+                Update z-index of fullscreen.css to at least 9999
+
+            Update all files in theme/:
+                Change background color ".cm-s-material-darker.CodeMirror" to #121212
+
+            Minify lib/codemirror.js  -> codemirror.min.js
+            Minify lib/codemirror.css -> codemirror.min.css

@@ -1,0 +1,103 @@
+{% extends 'base/intern.twig' %}
+
+{% block page_scripts %}
+    <script src="theme/otd/assets/vendor/tinymce/tinymce.min.js"></script>
+    <script src="/theme/otd/assets/js/page_email_all_users.js?{{ _app.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {% include 'includes/card_start.twig' %}
+
+        <form action="?page=admin_email_all_users" method="post" autocomplete="off">
+            <input type="hidden" name="submit" value="1">
+
+            {{ forms.checkbox_wrapped({
+                'label': recipients,
+                'is_required_fake': true,
+                'options': [
+                    {
+                        'label': administrator_accounts ~ ' (' ~ _admin_accounts_count ~ ')',
+                        'name': 'is_send_to_admins',
+                        'value': '1',
+                        'is_checked': _is_send_to_admins
+                    },
+                    {
+                        'label': user_accounts  ~ ' (' ~ _user_accounts_count ~ ')',
+                        'name': 'is_send_to_users',
+                        'value': '1',
+                        'is_checked': _is_send_to_users
+                    },
+                ]
+            }) }}
+
+            {% if _users_without_email %}
+                <div class="has-margin-bottom-medium">
+                    <span class="icon is-medium has-text-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </span>
+                    <strong>{{ accounts_without_email }}</strong>
+                    <p>
+                        {% for item in _users_without_email %}
+                            <a href="?page=admin_accounts_user&action=edit&id={{ item.id }}">{{ item.username }}</a>{{ not loop.last ? ',' }}
+                        {% endfor %}
+                    </p>
+                </div>
+            {% endif %}
+
+            {{ forms.input_wrapped({
+                'label': subject,
+                'name': 'subject',
+                'type': 'text',
+                'is_required': true,
+                'value': _subject
+            }) }}
+
+            {# When using TinyMCE, we need 'is_required_fake' instead of 'is_required' #}
+            {{ forms.textarea_wrapped({
+                'label': message,
+                'name': 'body',
+                'value': _body,
+                'is_required_fake': true,
+                'rows': 15,
+                'is_auto_resize': true
+            }) }}
+
+            {{ forms.input_wrapped({
+                'label': test_message,
+                'help': test_message_help,
+                'name': 'test_recipient',
+                'type': 'email',
+                'value': _admin_email,
+                'addons': {
+                    'right': {
+                        'type': 'action',
+                        'label': send_email,
+                        'action': 'app-send-test-email'
+                    }
+                },
+            }) }}
+
+            <div id="app-send-test-error" style="display: none">
+                <span class="has-text-danger has-text-weight-bold">
+                    {{ failed_to_send }}
+                </span>
+                <br>
+                <span id="app-send-test-error-message"></span>
+            </div>
+
+            <p class="has-text-grey has-text-centered has-margin-top-large">
+                {{ sender_note|raw }}
+            </p>
+
+            <div class="has-text-centered has-margin-top-medium">
+                <button class="button is-link">{{ send_email }}</a>
+            </div>
+        </form>
+
+    {% include 'includes/card_end.twig' %}
+
+{% endblock %}
