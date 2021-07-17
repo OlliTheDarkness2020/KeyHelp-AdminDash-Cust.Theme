@@ -1,0 +1,123 @@
+{% extends 'base/intern.twig' %}
+
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+    </p>
+
+    {# Button line #}
+    {% include 'includes/index_page_button_line.twig' with ({
+        '_add_btn_label': add_account_template,
+        '_add_btn_url': '?page=' ~ _app.page ~ '&action=add',
+        '_form_id': 'form-template-account'
+    }) %}
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% if _account_templates is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'includes/scroll_table_container_buttons.twig' %}
+                <form id="form-template-account" action="?page={{ _app.page }}&action=delete" method="post">
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                            <thead>
+                                <tr>
+                                    <th {% include 'includes/table_sorting.twig' with { '_column': 'name' } %}>
+                                        {{ name }}
+                                    </th>
+                                    <th {% include 'includes/table_sorting.twig' with { '_column': 'disk_space' } %}>
+                                        {{ disk_space }}
+                                    </th>
+                                    <th>
+                                        {{ resources }}
+                                    </th>
+                                    <th>
+                                        {{ permissions }}
+                                    </th>
+                                    <th class="is-narrow">
+                                        {{ options }}
+                                    </th>
+                                    <th class="is-narrow">
+                                        <label>
+                                            <input class="app-check-all" type="checkbox">
+                                        </label>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in _account_templates %}
+                                    <tr>
+                                        <td>
+                                            <strong>
+                                                {{ item.name }}
+                                            </strong>
+                                        </td>
+                                        <td>
+                                            {{ macros.amount_indicator(item.disk_space) }}
+                                        </td>
+                                        <td class="has-no-wrap">
+                                            <ul>
+                                                {% for resource in item.resources %}
+                                                    <li>
+                                                        <span style="display: inline-block; min-width: 2em;">{{ macros.amount_indicator(resource.value) }}</span>
+                                                        <span style="display: inline-block; margin-left: 1em">{{ resource.name }}</span>
+                                                    <li>
+                                                {% endfor %}
+                                            </ul>
+                                        </td>
+                                        <td class="has-no-wrap">
+                                            <ul>
+                                                {% for permission in item.permissions %}
+                                                    <li>
+                                                        <span style="display: inline-block; width: 2em">{{ macros.true_false_indicator(permission.is_enabled) }}</span>
+                                                        <span style="display: inline-block; margin-left: 1em">{{ permission.name }}</span>
+                                                    <li>
+                                                {% endfor %}
+                                            </ul>
+                                        </td>
+                                        <td class="is-narrow">
+                                            {% include 'includes/icon.twig' with {
+                                                '_type': 'edit',
+                                                '_url': '?page=' ~ _app.page ~ '&action=edit&id=' ~ item.id
+                                            } %}
+
+                                            {% include 'includes/icon.twig' with {
+                                                '_type': 'delete',
+                                                '_url': '?page=' ~ _app.page ~ '&action=delete&id=' ~ item.id
+                                            } %}
+                                        </td>
+                                        <td>
+                                            {{ item.checkbox|raw }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="42" class="has-text-grey-light">
+                                        {{ _account_templates|length }} {{ items_total }}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </form>
+
+            {% endif %}
+        </div>
+    </div>
+
+    {# Back #}
+    {% include 'includes/cta.twig' with { '_back': { 'target': 'admin_configuration' } } %}
+
+{% endblock %}
