@@ -24,6 +24,9 @@
 
     <title>{{ _app.page_title }}</title>
     <link rel="stylesheet" href="/theme/otd/assets/css/style{{ _app.theme.is_dark_mode ? '-dark' }}{{ _app.text_direction == 'rtl' ? '-rtl' }}.css?{{ _app.cache_control }}">
+    <link rel="stylesheet" href="/theme/otd/assets/css/otd.css?{{ _app.cache_control }}">
+    <link rel="stylesheet" href="/theme/otd/assets/css/bulma-tooltip.min.css?{{ _app.cache_control }}">
+    <link rel="stylesheet" href="/theme/otd/assets/css/bulma-quickview.min.css?{{ _app.cache_control }}">
 
     {% block page_css %}{% endblock %}
 
@@ -51,6 +54,8 @@
     <script src="/theme/otd/assets/vendor/select2/i18n/{{ _app.language }}.js?{{ _app.cache_control }}"></script>
     <script src="/theme/otd/assets/js/functions.js?{{ _app.cache_control }}"></script>
     <script src="/theme/otd/assets/js/main.js?{{ _app.cache_control }}"></script>
+    <script src="/theme/otd/assets/js/bulma-quickview.min.js?{{ _app.cache_control }}"></script>
+    <script src="/theme/otd/assets/js/vue.min.js?{{ _app.cache_control }}"></script>
 
     {% block page_scripts %}{% endblock %}
 

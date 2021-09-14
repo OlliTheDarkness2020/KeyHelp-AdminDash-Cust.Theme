@@ -2,6 +2,28 @@
 
 <hr>
 
+<h2> <b> <u> Änderungen 14.09.2021 ( Dev-Version 21.1.2 ) </u> </b> </h2>
+
+<b> Dash Panel </b>
+<ul>
+
+<li> Fail2Ban Mini WebUI Box (Offen) </li>
+
+<li> Dash- & Codevorbereitung für dies & das (Offen) </li>
+
+<li> Allgemeine Bereinigungen </li>
+
+</ul>
+
+<b> GitHub </b>
+<ul>
+
+<li> Vorbereitung auf 21.2 </li>
+
+</ul>
+
+<hr>
+
 <h2> <b> <u> Änderungen 18.07.2021 ( Dev-Version 21.1.1 ) </u> </b> </h2>
 
 <b> Dash Panel </b>

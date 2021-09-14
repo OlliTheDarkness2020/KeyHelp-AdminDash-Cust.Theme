@@ -2,7 +2,7 @@
     "name": "KeyHelp Custom Admin Dash - Theme",
     "description": "KeyHelp Theme with TeamSpeak / S.M.A.R.T / etc.",
     "author": "Alexander Mahr ( EDIT: OlliTheDarkness )",
-    "version": "DEV-21.1.1",
+    "version": "DEV-21.1.2",
     "website": "https:\/\/github.com/OlliTheDarkness2020/KeyHelp-AdminDash-Cust.Theme",
     "path_to_templates": "twig\/",
     "has_dark_mode": true

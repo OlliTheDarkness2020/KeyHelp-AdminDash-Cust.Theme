@@ -1,7 +1,5 @@
 {% extends 'base/intern.twig' %}
 
-
-
 {% block page_scripts %}
     <script>
         clock('#app-server-time');
@@ -11,8 +9,6 @@
 
     <script src="/theme/otd/assets/js/otd_admin_dashboard.js?{{ _app.cache_control }}"></script>
 {% endblock %}
-
-
 
 {% block content %}
     {% import "macros/macros.twig" as macros %}
@@ -465,7 +461,20 @@
             Right | 4rd
         ###############################################################################################################}
 
-  {# 4.1 (Status TS3) #}
+  {# 4.1 (Status F2B) #}
+	  {% include 'includes/card_start_stacked_f2b.twig' with
+      {
+      '_label': 'Fail2Ban Überwachung',
+      '_icon': 'fas fa-first-aid fa-lg',
+      '_has_margin_top': true,
+      '_is_collapsible': true,
+      '_cookie_name': 'otd-f2b'
+      }
+    %}
+      {% include 'includes/status_f2b.twig' %}
+    {% include 'includes/card_end_stacked.twig' %}
+
+  {# 4.2 (Status TS3) #}
     {% include 'includes/card_start_stacked_ts3.twig' with
       {
         '_label': 'TeamSpeak3 Control',
@@ -478,7 +487,7 @@
       {% include 'includes/status_ts3.twig' %}
     {% include 'includes/card_end_stacked.twig' %}
 
-  {# 4.2 (Status Raid) #}
+  {# 4.3 (Status Raid) #}
 	  {% include 'includes/card_start_stacked_raid.twig' with
       {
       '_label': 'Raid Überwachung',
@@ -491,7 +500,7 @@
       {% include 'includes/status_raid.twig' %}
     {% include 'includes/card_end_stacked.twig' %}
 
-  {# 4.3 (Status S.M.A.R.T) #}
+  {# 4.4 (Status S.M.A.R.T) #}
 	  {% include 'includes/card_start_stacked_smart.twig' with
       {
       '_label': 'S.M.A.R.T Überwachung',
@@ -504,7 +513,7 @@
       {% include 'includes/status_smart.twig' %}
     {% include 'includes/card_end_stacked.twig' %}
 
-  {# 4.4 (Status Temperatur) #}
+  {# 4.5 (Status Temperatur) #}
 	  {% include 'includes/card_start_stacked_temperatur.twig' with
       {
       '_label': 'Temperaturen',
@@ -573,6 +582,226 @@
         {% endif %}
     </div>
 </div>
+
+
+{# Custom Footer Tools Start #}
+    {% include 'includes/card_start_stacked_otdtools.twig' with
+      {
+      '_label': 'Tools for KH by OlliTheDarkness',
+      '_icon': 'fa fa-terminal',
+      '_has_margin_top': true,
+      '_is_collapsible': true,
+      '_cookie_name': 'otd-tools'
+      }
+    %}
+              <div id="OTD-Tools">
+                <div class="tabtool">
+
+                  <table>
+                    <thead>
+                      <tr>
+                        <th colspan="2" class="has-text-centered"> Anwendungen <p class="has-text-weight-light"> Kann Installiert werden </p> </th>
+                      </tr>
+                    </thead>
+                    <tbody class="has-text-centered">
+                      <tr>
+                        <td> <a href="#" style="margin-top: 5px; margin-bottom: 5px;" class="button is-ghost has-tooltip-right has-tooltip-info is-tooltip-multiline" data-tooltip="Fail2Web ist eine Weboberfläche für die von KH verwendete Fail2Ban Software.&#10;&#013;Dadurch wird die Verwaltung von F2B Regeln, Bans, etc. auf einfache Art möglich."> Fail2Web - F2B WebUI </label> </td>
+                          <!-- <button style="margin-top: 5px; margin-bottom: 5px;" class="button is-danger is-rounded modal-button" data-target="#modal" aria-haspopup="true"> <span class="icon"> <i class="fab fa-instalod"> </i> </span> <span> Jetzt Installieren </span> </button> -->
+                        <td>
+                          <div id="app">
+                            <button @click="showProcessModal = true" style="margin-top: 5px; margin-bottom: 5px;" class="button is-danger is-rounded modal-button"> Installieren </button>
+                            <process-modal :show="showProcessModal" @close="showProcessModal = false"> </process-modal>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                   </table>
+
+                   <table>
+                    <thead>
+                      <tr>
+                        <th colspan="2" class="has-text-centered"> Anwendungen <p class="has-text-weight-light"> Bereits installiert ist </p> </th>
+                      </tr>
+                    </thead>
+                    <tbody class="has-text-centered">
+                      <tr>
+                        <td> yolo </td>
+                        <td> <span class="icon"> <i class="fas fa-plug"> </i> </span> <span> Installiert </span> </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                </div>
+              </div>
+
+<script type="x/template" id="modal-template">
+    <transition name="modal">
+        <div class="modal-mask" @click="close" v-show="show">
+          <div class="modal is-active">
+            <div class="modal-background"> </div>
+            <div class="modal-card" @click.stop>
+              <header class="modal-card-head">
+                <p class="modal-card-title"> Fail2Web Installation </p>
+                <button class="delete" aria-label="close" @click="close"> </button>
+              </header>
+              <section class="modal-card-body">
+                  <component :is="currentform" v-bind:currentdata="currentdata" @update_value="updateValue"> </component>
+              </section>
+              <footer class="modal-card-foot">
+
+                <button class="button is-success" @click="autoThing()" v-show="step<1">
+                  Auto Installation
+                </button>
+
+                <button class="button" @click="nextThing()" v-show="step<things.length-1">
+                  Weiter
+                </button>
+
+                <button class="button" @click="previousThing()" v-show="step>0">
+                  Zurück
+                </button>
+
+                <button class="button is-success" @click="finishThing()" v-show="step==things.length-1">
+                  Abschließen
+                </button>
+
+                <button class="button" @click="cancelThing()">
+                  Abbrechen
+                </button>
+
+              </footer>
+             </div>
+          </div>
+        </div>
+    </transition>
+</script>
+
+<script type="x/template" id="F2B-Page-1">
+  <div class="field">
+    <label class="label is-size-4"> Willkommen zur <u> <b> Fail2Ban WebUI </b> </u> Installation </label>
+    <div class="control">
+      <hr>
+        <p>
+          <b> <u> Es werden ggf. folgende zusätzliche Pakete installiert, wenn nicht bereits vorhanden: </b> </u>
+          <br />
+            <ul>
+              <li> golang </li>
+              <li> git </li>
+              <li> gcc </li>
+            </ul>
+          <br />
+          <b> <u> Des weiteren werden folgende Apache2 Module aktiviert: </b> </u>
+            <ul>
+              <li> proxy </li>
+              <li> proxy_ajp </li>
+              <li> proxy_http </li>
+              <li> rewrite </li>
+              <li> deflate </li>
+              <li> headers </li>
+              <li> proxy_balancer </li>
+              <li> proxy_connect </li>
+              <li> proxy_html </li>
+            </ul>
+          <br />
+          <b> WICHTIG: Der Port <u> 5000 </u> wird intern belegt ! </b>
+        </p>
+    </div>
+  </div>
+</script>
+
+<script type="x/template" id="F2B-Page-2">
+  <div class="field">
+    <label class="label is-size-4"> <u> <b> Manuelle Installation </b> </u> </label>
+    <div class="control">
+      <hr>
+        <p>
+          <b> <u> Bitte führen Sie nachfolgende Befehle auf der Shell aus: </b> </u>
+          <br /> <br />
+            <ul>
+              <div> <input type="text" value="apt-get install golang git gcc" size="48" readonly> </div>
+              <div> <input type="text" value="go get github.com/Sean-Der/fail2rest" size="48" readonly> </div>
+              <div> <input type="text" value="cd $GOPATH/src/github.com/Sean-Der/fail2rest" size="48" readonly> </div>
+              <div> <input type="text" value="go run *.go" size="48" readonly> </div>
+              <div> <input type="text" value="wget -qO- -- &quot;localhost:5000/global/ping&quot;" size="48" readonly> </div>
+              <div> <input type="text" value="git clone --depth=1 https://github.com/Sean-Der/fail2web.git /var/www/fail2web" size="48" readonly> </div>
+              <div> <input type="text" value="a2enmod proxy proxy_ajp proxy_http rewrite deflate headers proxy_balancer proxy_connect proxy_html" size="48" readonly> </div>
+            </ul>
+          <br />
+          <b> <u> Des weiteren werden folgende Apache2 Module aktiviert: </b> </u>
+            <ul>
+              <li> proxy </li>
+              <li> proxy_ajp </li>
+              <li> proxy_http </li>
+            </ul>
+          <br />
+          <b> WICHTIG: Der Port <u> 5000 </u> wird intern belegt ! </b>
+        </p>
+    </div>
+  </div>
+</script>
+
+<script type="x/template" id="F2B-Page-3">
+  <div class="field">
+    <label class="label"> Onions ? </label>
+    <div class="control">
+        <p> Hallo Welt </p>
+    </div>
+  </div>
+</script>
+
+{#
+<!--
+<div id="modal" class="modal">
+  <div class="modal-background"> </div>
+  <div class="modal-content">
+    <div class="box">
+      <article class="media">
+        <div class="media-content">
+          <div class="content">
+            <p>
+              <strong> Fail2Web </strong> <small> Eine F2B WebUI </small>
+              <br>
+              Es werden ggf. folgende zusätzliche Pakete installiert, wenn nicht bereits vorhanden:
+              <br />
+                <ul>
+                  <li> golang </li>
+                  <li> git </li>
+                  <li> gcc </li>
+                </ul>
+              <br />
+              Des weiteren werden folgende Apache2 Module aktiviert:
+                <ul>
+                  <li> proxy </li>
+                  <li> proxy_ajp </li>
+                  <li> proxy_http </li>
+                  <li> rewrite </li>
+                  <li> deflate </li>
+                  <li> headers </li>
+                  <li> proxy_balancer </li>
+                  <li> proxy_connect </li>
+                  <li> proxy_html </li>
+                </ul>
+              <br />
+              <b> WICHTIG: Der Port 5000 wird intern belegt ! </b>
+            </p>
+          </div>
+          <button class="button is-info is-small" id="mod-save"> Installation starten </button>
+           < | >
+          <button class="button is-danger is-small" id="modal-closebtn"> Installation abbrechen </button>
+        </div>
+      </article>
+    </div>
+  </div>
+  <button class="modal-close is-large" aria-label="close"></button>
+</div>
+-->
+#}
+    {% include 'includes/card_end_stacked.twig' %}
+{# Custom Footer Tools Ende #}
+
+
+
+
 
 {# Custom Footer Start #}
 {#

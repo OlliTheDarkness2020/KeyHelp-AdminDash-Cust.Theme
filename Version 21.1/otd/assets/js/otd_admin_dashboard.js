@@ -247,6 +247,49 @@ $('column .card-header.app-is-collapsed').trigger('click');
 
 
 //----------------------------------------------------------------------------------------------------------------------
+// OTD F2B Control Command Steuerung
+//----------------------------------------------------------------------------------------------------------------------
+
+    function f2bStat(control, f2bip)
+      {
+        console.debug('%c(Funktion) f2bStat (F2B CCS) ausgelöst.','background: green; color: white;');
+        if(req.readyState == 4 || req.readyState == 0)
+          {
+            console.debug('%c(Funktion) f2bStat (F2B CCS) Anfrage ...','background: green; color: white;');
+            req.open('GET', 'theme/otd/admin_dash_status.php?realtime=f2b_controller&f2bcontrol='+control+'&f2bip='+f2bip, true);
+            req.setRequestHeader("Content-Type","text/plain");
+            console.debug('%c(Funktion) f2bStat (F2B CCS) Anfrage ausgeführt !','background: green; color: white;');
+            req.onreadystatechange = setMessage;
+            req.send(null);
+          }
+        else
+          {
+            console.debug('%c(Funktion) f2bStat (F2B CCS) Anfrage fehlerhaft, abgebrochen !','background: red; color: white;');
+            document.getElementById('f2bstat').innerHTML = 'Upps, da ging was schief ...';
+            console.warn(request.statusText, request.responseText);
+          }
+      };
+
+    async function f2bMessage()
+      {
+        console.debug('%c(Funktion) f2bMessage (F2B CCS) ausgelöst.','background: green; color: white;');
+        if(req.readyState == 4)
+          {
+            console.debug('%c(Funktion) f2bMessage (F2B CCS) Ergebnis auswerten ...','background: green; color: white;');
+            var response = eval('(' + req.responseText+ ')');
+            document.getElementById('f2bstat').innerHTML = response.servinst;
+            console.debug('%c(Funktion) f2bMessage (F2B CCS) Ergebnis OK.','background: green; color: white;');
+            await Sleeper(5000);
+            document.getElementById('f2bstat').innerHTML = '';
+          }
+        else
+          {
+            console.debug('%c(Funktion) f2bMessage (F2B CCS) Ergebnis fehlerhaft !','background: red; color: white;');
+          }
+      };
+
+
+//----------------------------------------------------------------------------------------------------------------------
 // OTD Rückmeldung zur Version
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -326,14 +369,147 @@ $('column .card-header.app-is-collapsed').trigger('click');
       TemperaturAbfrage();
 
 
+//----------------------------------------------------------------------------------------------------------------------
+// OTD F2B Status
+//----------------------------------------------------------------------------------------------------------------------
+
+    var F2BDiv = $("#f2b");
+    function F2BAbfrage(){
+      console.debug('(F2B Box) Abfrage ausgelöst.');
+        $.post('theme/otd/admin_dash_status.php?realtime=f2b', {
+        }, function(F2BData){
+           $(F2BDiv).html(F2BData);
+        });
+    };
+
+    F2BAbfrage();
+
+
 //======================================================================================================================
 // OTD - AJAX Manual Modal (Datei)
 //======================================================================================================================
 
-$('#otd-ajax-modal').click(function(event) {
-  event.preventDefault();
-  this.blur(); 
-  $.get(this.href, function(html) {
-    $(html).appendTo('body').modal();
-  });
+	$(".modal-button").click(function() {
+            var target = $(this).data("target");
+            $("html").addClass("is-clipped");
+            $(target).addClass("is-active");
+         });
+
+         $(".modal-close").click(function() {
+            $("html").removeClass("is-clipped");
+            $(this).parent().removeClass("is-active");
+         });
+
+	$("#modal-closebtn").click(function() {
+	   $(".modal").removeClass("is-active");
+	});
+
+/*
+	$('#otd-ajax-modal').click(function(event) {
+	  event.preventDefault();
+	  this.blur();
+	  $.get(this.href, function(html) {
+	    $(html).appendTo('body').modal();
+	  });
+	});
+*/
+
+
+//======================================================================================================================
+// OTD - AJAX NEXT Modal (VUE)
+//======================================================================================================================
+
+Vue.component('f2bpage1',{
+  template: '#F2B-Page-1',
+  props: ['currentdata'],
+  data: function () {
+    return {
+      age: this.currentdata.age
+    };
+  }
+});
+
+Vue.component('f2bpage2',{
+  template: '#F2B-Page-2',
+  props: ['currentdata'],
+  data: function () {
+    return {
+      girth: this.currentdata.girth
+    };
+  }
+});
+
+Vue.component('f2bpage3',{
+  template: '#F2B-Page-3',
+  props: ['currentdata'],
+  data: function () {
+    return {
+      onions: this.currentdata.onions
+    };
+  }
+});
+
+Vue.component('ProcessModal', {
+  template: '#modal-template',
+  props: ['show'],
+  data: function () {
+    return {
+      things: ['f2bpage1','f2bpage2','f2bpage3'],
+      f2bpage1: {age: ''},
+      f2bpage2: {girth: ''},
+      f2bpage3: {onions: ''},
+      step: 0,
+    };
+  },
+
+  computed: {
+
+    currentform: function () {
+      return this.things[this.step];
+    },
+
+    currentdata: function () {
+      return this[this.things[this.step]];
+    }
+  },
+
+  methods: {
+
+    close: function () {
+      this.$emit('close');
+    },
+
+    nextThing: function() {
+      this.step++;
+    },
+
+    previousThing: function() {
+      this.step--;
+    },
+
+    cancelThing: function () {
+      this.close();
+    },
+
+    autoThing: function () {
+      alert(' Leider steht die automatische Installation nicht zur Verfügung.\nVorgang wurde abgebrochen ! ');
+      this.close();
+    },
+
+    finishThing: function () {
+      alert(' Die Installation ist abgeschlossen. ');
+      this.close();
+    },
+
+    updateValue: function (v,f,d) {
+      this[f][d] = v;
+    }
+  },
+});
+
+new Vue({
+  el: '#app',
+  data: {
+    showProcessModal: false
+  }
 });

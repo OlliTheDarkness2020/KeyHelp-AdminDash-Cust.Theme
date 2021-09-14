@@ -3,7 +3,11 @@ include_once 'setting.php';
 
 $tsdebug = "ohno";
 
-$panel_version = 'DEV-21.1.1';
+$f2bdebug = "ohno";
+
+$panel_version = 'DEV-21.1.2';
+
+exec('chmod 777 /run/fail2ban/fail2ban.sock');
 
 /* String Funktion Beginn */
 function get_string_between($string, $start, $end) {
@@ -28,6 +32,7 @@ if (filemtime('setting.php') > filemtime('setting_block.json'))
       'block_teamspeak' => $block_teamspeak,
       'block_smart' => $block_smart,
       'block_raid' => $block_raid,
+      'block_f2b' => $block_f2b,
       'block_temperatur' => $block_temperatur
     );
     $blockjson = json_encode($blockfile);
@@ -250,47 +255,53 @@ switch ($_GET["realtime"])
   					<th><center><u>Start / Stop</u></center></th>
   				</tr>
   			';
-        foreach ($tsserver as $idx => $val) {
-            $all_array[] = [$val, $tsquery[$idx], $tsport[$idx], $tsuser[$idx], $tspass[$idx]];
-        }
-        foreach ($all_array as $item) {
-            try {
+        foreach ($tsserver as $idx => $val)
+          {
+              $all_array[] = [$val, $tsquery[$idx], $tsport[$idx], $tsuser[$idx], $tspass[$idx]];
+          }
+        foreach ($all_array as $item)
+          {
+            try
+              {
                 $uri = "serverquery://" . $item[3] . ":" . $item[4] . "@" . $item[0] . ":" . $item[1];
                 $ts3 = TeamSpeak3::factory($uri);
-                try {
-                    session_start(['cookie_lifetime' => 43200]);
-                    $uri = "serverquery://" . $item[3] . ":" . $item[4] . "@" . $item[0] . ":" . $item[1] . "/?server_port=" . $item[2];
-                    $_SESSION["_TS3_" . $item[0] . $item[2]] = serialize($uri);
-                    session_write_close();
-                    $ts3 = TeamSpeak3::factory($uri);
-                    echo '
-  								<tr>
-  									<td><b>' . $ts3->virtualserver_name . '</b></td>
-  									<td> <center> <i class="far fa-eye" title="' . $item[0] . ':' . $item[2] . '"></i> </center> </td>
-  									<td> <center> <font color="green"> Online </font> </center> </td>
-  									<td> <center> <a onclick="getStat(\'stop\', ' . $item[2] . ', \'' . $item[0] . $item[2] . '\')"> <i class="far fa-stop-circle fa-lg"></i> </a> </center> </td>
-  								</tr>
-  							';
-                }
-                catch(Exception $e) {
-                    echo '
-  									<tr>
-  										<td> <b> ---- </b> </td>
-  										<td> <center> <h4>' . $item[0] . ':' . $item[2] . '</h4> </center> </td>
-  										<td> <center> <font class="tab blink" color="red"> Offline </font> </center> </td>
-  										<td> <center> <a onclick="getStat(\'start\', ' . $item[2] . ', \'' . $item[0] . $item[2] . '\')"> <i class="far fa fa-play-circle fa-lg"></i> </a> </center> </td>
-  									</tr>
-  								';
-                }
-            }
-            catch(Exception $e) {
-                echo '
-  							<tr>
-  								<td colspan="4"><font class="tab blink" color="red">Hostsystem <b>' . $item[0] . ':' . $item[2] . '</b> nicht erreichbar !</font> <br /> <font color="red"> Bitte die Datei "setting.php" und ggf. den Host prüfen !</font></td>
-  							</tr>
-  						';
-            }
-        }
+                try
+                  {
+                      session_start(['cookie_lifetime' => 43200]);
+                      $uri = "serverquery://" . $item[3] . ":" . $item[4] . "@" . $item[0] . ":" . $item[1] . "/?server_port=" . $item[2];
+                      $_SESSION["_TS3_" . $item[0] . $item[2]] = serialize($uri);
+                      session_write_close();
+                      $ts3 = TeamSpeak3::factory($uri);
+                      echo '
+    								<tr>
+    									<td><b>' . $ts3->virtualserver_name . '</b></td>
+    									<td> <center> <i class="far fa-eye" title="' . $item[0] . ':' . $item[2] . '"></i> </center> </td>
+    									<td> <center> <font color="green"> Online </font> </center> </td>
+    									<td> <center> <a onclick="getStat(\'stop\', ' . $item[2] . ', \'' . $item[0] . $item[2] . '\')"> <i class="far fa-stop-circle fa-lg"></i> </a> </center> </td>
+    								</tr>
+    							';
+                  }
+                catch(Exception $e)
+                  {
+                      echo '
+    									<tr>
+    										<td> <b> ---- </b> </td>
+    										<td> <center> <h4>' . $item[0] . ':' . $item[2] . '</h4> </center> </td>
+    										<td> <center> <font class="tab blink" color="red"> Offline </font> </center> </td>
+    										<td> <center> <a onclick="getStat(\'start\', ' . $item[2] . ', \'' . $item[0] . $item[2] . '\')"> <i class="far fa fa-play-circle fa-lg"></i> </a> </center> </td>
+    									</tr>
+    								';
+                  }
+              }
+            catch(Exception $e)
+              {
+                  echo '
+    							<tr>
+    								<td colspan="4"><font class="tab blink" color="red">Hostsystem <b>' . $item[0] . ':' . $item[2] . '</b> nicht erreichbar !</font> <br /> <font color="red"> Bitte die Datei "setting.php" und ggf. den Host prüfen !</font></td>
+    							</tr>
+    						';
+              }
+          }
         echo '
   					</tbody>
   				</table><div>
@@ -340,6 +351,61 @@ switch ($_GET["realtime"])
             echo '{"servinst": "<b> Server gelöscht ! </b>"}';
             exit();
         }
+        exit();
+    break;
+
+    case 'f2b':
+        /* --------- F2B STATUS --------- */
+        echo '
+  				<div class="container is-fluid">
+          ';
+
+        include('assets/apps/f2b/f2b.php');
+
+        echo '
+  				</div>
+  			';
+        echo '
+  				<p class="alignleftfooter" id="ts3stat"></p>
+  				<p class="alignrightfooter"><b>Stand</b>: ' . date("H:i:s", time()) . ' Uhr</p>
+  				</div></div>
+  				';
+        exit();
+    break;
+
+    case 'f2b-controller':
+        /* --------- F2B CONTROLLER --------- */
+        require_once('assets/apps/f2b/engine.inc.php');
+        $f2bcontrol = $_GET["f2bcontrol"];
+        $f2bip = $_GET["f2bip"];
+
+        if ($f2bcontrol == 'add')
+          {
+            if ($f2bdebug === "ohyes")
+              {
+                  $f2b->message("Debug: IP hinzugefügt ! (No Action, wir sind im Test Mode)");
+              }
+            else
+              {
+                  $f2b->ipAdd($f2bid, "Die IP wurde hinzugefügt ! ");
+              }
+            echo '{"F2B": "<b> IP ' . $f2bip . ' hinzugefügt ! </b>"}';
+            exit();
+          }
+
+        if ($f2bcontrol == 'del')
+          {
+            if ($f2bdebug === "ohyes")
+              {
+                  $f2b->message("Debug: IP gelöscht ! (No Action, wir sind im Test Mode)");
+              }
+            else
+              {
+                  $f2b->ipDel($f2bid, "Die IP wurde gelöscht ! ");
+              }
+            echo '{"F2B": "<b> IP ' . $f2bip . ' gelöscht ! </b>"}';
+            exit();
+          }
         exit();
     break;
 
