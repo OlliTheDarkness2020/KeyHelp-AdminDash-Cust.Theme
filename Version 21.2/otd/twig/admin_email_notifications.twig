@@ -1,0 +1,306 @@
+{% extends 'base/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_email_notifications.js?{{ _app.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+    </p>
+
+    {# Button line #}
+    <div class="level has-margin-bottom-medium">
+        <div class="level-left">
+        </div>
+        <div class="level-right">
+            <div class="level-item">
+                {{ forms.button({
+                    'label': general_settings,
+                    'style': 'primary',
+                    'class': 'is-outlined',
+                    'url': '?page=' ~ _app.page ~ '&action=general_settings'
+                }) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="level">
+        <div class="level-left">
+        </div>
+        <div class="level-right">
+            <div class="level-item">
+                {{ forms.button({
+                    'label': add_custom_message,
+                    'style': 'primary',
+                    'url': '?page=' ~ _app.page ~ '&action=add'
+                }) }}
+            </div>
+            <div class="level-item">
+                {{ forms.button({
+                    'label': reset_all_settings,
+                    'style': 'secondary',
+                    'class': 'app-reset-all'
+                }) }}
+            </div>
+        </div>
+    </div>
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% include 'includes/scroll_table_container_buttons.twig' %}
+            <form id="form-email-notifications-index" action="?page={{ _app.page }}&action=delete" method="post">
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                        <thead>
+                            <tr>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'event_label' } %}>
+                                    {{ event }}
+                                </th>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'recipients_sort' } %}>
+                                    {{ recipients }}
+                                </th>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'is_enabled' } %}>
+                                    {{ is_enabled }}
+                                </th>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'copy_email_addresses' } %}>
+                                    {{ send_copy }}
+                                </th>
+                                <th>
+                                    {{ custom_message }}
+                                </th>
+                                <th class="is-narrow">
+                                    {{ options }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in _email_notifications %}
+                                <tr>
+                                    <td style="display: none">
+                                        <input type="text" name="event_type" value="{{ item.event_type }}">
+                                        <input type="text" name="event_label" value="{{ item.event_label }}">
+                                        <input type="text" name="is_enabled" value="{{ item.is_enabled }}">
+                                        <input type="text" name="copy_email_addresses" value="{{ item.copy_email_addresses }}">
+                                    </td>
+                                    <td class="has-no-wrap">
+                                        {{ item.event_label }}
+                                    </td>
+                                    <td class="has-no-wrap">
+                                        {% for key, is_recipient in item.recipients %}
+                                            {% if is_recipient %}
+                                                <span class="icon has-text-grey app-tooltip" data-tippy-content="{{ key == 'client' ? client : administrator }}">
+                                                    <i class="{{ key == 'client' ? 'fas fa-user' : 'fas fa-user-tie' }}"></i>
+                                                </span>
+                                            {% else  %}
+                                                <span class="icon">
+                                                </span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td class="has-no-wrap">
+                                        {% if item.is_enabled %}
+                                            <span class="icon is-small has-margin-right-xsmall has-text-success">
+                                                <i class="fas fa-square"></i>
+                                            </span>
+                                            {{ enabled }}
+                                        {% else %}
+                                            <span class="icon is-small has-margin-right-xsmall has-text-danger">
+                                                <i class="fas fa-square"></i>
+                                            </span>
+                                            {{ disabled }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ item.copy_email_addresses }}
+                                    </td>
+                                    <td>
+                                        {% if item.custom_message_languages %}
+                                            {% set _custom_messages_menu %}
+                                                <table class="table is-narrow is-nested-table">
+                                                    {% for language, message in item.custom_message_languages %}
+                                                        <tr>
+                                                            <td style="display: none">
+                                                                <input type="text" name="event_type" value="{{ item.event_type }}">
+                                                                <input type="text" name="language" value="{{ language}}">
+                                                            </td>
+                                                            <td>{{ message.label }}</td>
+                                                            <td>
+                                                                {% include 'includes/icon.twig' with {
+                                                                    '_type': 'edit',
+                                                                    '_url': '?page=' ~ _app.page ~ '&action=edit&event_type=' ~ item.event_type ~ '&language=' ~ language ~ '&sid=' ~ _app.sid,
+                                                                } %}
+
+                                                                <span class="app-modal-delete-custom-message">
+                                                                    {% include 'includes/icon.twig' with {
+                                                                        '_type': 'delete',
+                                                                        '_url': 'javascript:void(0)'
+                                                                    } %}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </table>
+                                            {% endset %}
+
+                                            <a href="javascript: void(0)" class="app-tooltip-mandatory" data-tippy-content="{{ _custom_messages_menu|escape('html') }}">
+                                                {{ edit }}
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                    <td class="has-no-wrap">
+                                        <span class="app-edit-notification">
+                                            {% include 'includes/icon.twig' with {
+                                                '_type': 'edit',
+                                                '_url': 'javascript:void(0)',
+                                            } %}
+                                        </span>
+
+                                        {% include 'includes/icon.twig' with {
+                                            '_type': 'plus',
+                                            '_tooltip': add_custom_message,
+                                            '_url': '?page=' ~ _app.page ~ '&action=add&event_type=' ~ item.event_type
+                                        } %}
+
+                                        <span class="app-reset-notification">
+                                            {% include 'includes/icon.twig' with {
+                                                '_type': 'reset',
+                                                '_url': 'javascript:void(0)'
+                                            } %}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="42" class="has-text-grey-light">
+                                    {{ _email_notifications|length }} {{ items_total }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {# Back #}
+    {% include 'includes/cta.twig' with { '_back': { 'target': 'admin_configuration' } } %}
+
+
+{#######################################################################################################################
+    Modal | Delete custom message
+#######################################################################################################################}
+
+    <form action="?page={{ _app.page }}&action=delete" method="post">
+        <input type="hidden" name="submit" value="1">
+        <input type="hidden" name="event_type" value="">
+        <input type="hidden" name="language" value="">
+
+        <div id="app-modal-delete-custom-message" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">{{ delete_custom_message }}</p>
+                    <button class="delete app-modal-close" type="button"></button>
+                </header>
+                <div class="modal-card-body">
+                    <p class="has-text-centered">
+                        {{ delete_custom_message_confirmation }}
+                    </p>
+                </div>
+                <footer class="modal-card-foot">
+                    {{ forms.button({'label': yes, 'style': 'primary' }) }}
+                    {{ forms.button({'label': cancel, 'class': 'app-modal-close', 'type': 'button' }) }}
+                </footer>
+            </div>
+        </div>
+    </form>
+
+{#######################################################################################################################
+    Modal | Notification settings
+#######################################################################################################################}
+
+    <form action="?page={{ _app.page }}&action=update_notification_settings" method="post">
+        <input type="hidden" name="submit" value="1">
+        <input type="hidden" name="event_type" value="">
+
+        <div id="app-modal-notification-settings" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">{{ notification_settings }}</p>
+                    <button class="delete app-modal-close" type="button"></button>
+                </header>
+                <div class="modal-card-body">
+
+                    <div id="app-event-label">
+                        {{ forms.label_wrapped({
+                            'label': event,
+                            'value': '...'
+                        }) }}
+                    </div>
+
+                    {{ forms.checkbox_wrapped({
+                        'label': is_enabled,
+                        'help': is_enabled_help,
+                        'options': {
+                            'label': enabled,
+                            'name': 'is_enabled',
+                            'value': '1',
+                        }
+                    }) }}
+
+                    {{ forms.input_wrapped({
+                        'label': send_copy,
+                        'help': send_copy_help,
+                        'name': 'copy_email_addresses',
+                        'type': 'text',
+                    }) }}
+                </div>
+                <footer class="modal-card-foot">
+                    {{ forms.button({'label': save, 'style': 'primary', 'class': 'app-button-with-loading-animation' }) }}
+                    {{ forms.button({'label': cancel, 'class': 'app-modal-close', 'type': 'button' }) }}
+                </footer>
+            </div>
+        </div>
+    </form>
+
+{#######################################################################################################################
+    Modal | Reset notification settings
+#######################################################################################################################}
+
+    <form action="?page={{ _app.page }}&action=reset_notification" method="post">
+        <input type="hidden" name="submit" value="1">
+        <input type="hidden" name="event_type" value="">
+
+        <div id="app-modal-reset-notification" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">{{ reset_settings }}</p>
+                    <button class="delete app-modal-close" type="button"></button>
+                </header>
+                <div class="modal-card-body">
+                    <p class="has-text-centered">
+                        {{ reset_settings_confirmation }}
+                    </p>
+                </div>
+                <footer class="modal-card-foot">
+                    {{ forms.button({'label': yes, 'style': 'primary', 'class': 'app-button-with-loading-animation' }) }}
+                    {{ forms.button({'label': cancel, 'class': 'app-modal-close', 'type': 'button' }) }}
+                </footer>
+            </div>
+        </div>
+    </form>
+
+
+{% endblock %}

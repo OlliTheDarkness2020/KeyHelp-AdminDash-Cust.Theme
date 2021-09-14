@@ -1,0 +1,84 @@
+{% extends 'base/intern.twig' %}
+
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {% include 'includes/card_start.twig' %}
+
+        <form action="?page={{ _app.page }}&action={{ _action }}" method="post" autocomplete="off">
+            <input type="hidden" name="submit" value="1">
+            <input type="hidden" name="id" value="{{ _id }}">
+
+            {{ forms.input_wrapped({
+                'label': label,
+                'type': 'text',
+                'name': 'label',
+                'value': _button_label,
+                'is_required': true,
+            }) }}
+
+            {{ forms.input_wrapped({
+                'label': url,
+                'help': url_help,
+                'type': 'text',
+                'name': 'url',
+                'value': _url,
+                'is_required': true,
+            }) }}
+
+            {{ forms.checkbox_wrapped({
+                'options': {
+                    'label': open_in_new_tab,
+                    'name': 'is_new_tab',
+                    'value': '1',
+                    'is_checked': _is_new_tab
+                }
+            }) }}
+
+            {{ forms.radio_wrapped({
+                'label': 'Area',
+                'options': [
+                    {
+                        'label': admin_area,
+                        'name': 'area',
+                        'value': 'admin',
+                        'is_checked': true,
+                    },
+                    {
+                        'label': user_area,
+                        'name': 'area',
+                        'value': 'user',
+                    },
+                ]
+            }) }}
+
+            {{ forms.select_wrapped({
+                'label': 'Category',
+                'name': 'field-14',
+                'options': _admin_nav,
+                'selected': 'it',
+            }) }}
+
+            {{ forms.select_wrapped({
+                'label': 'Category',
+                'name': 'field-14',
+                'options': _client_nav,
+                'selected': 'it',
+            }) }}
+
+            {{ forms.input_wrapped({
+                'label': position,
+                'type': 'number',
+                'name': 'position',
+                'value': _position,
+            }) }}
+
+            {% include 'includes/cta.twig' with { '_back': { 'target': _app.page }, '_confirm': true } %}
+        </form>
+
+    {% include 'includes/card_end.twig' %}
+
+{% endblock %}

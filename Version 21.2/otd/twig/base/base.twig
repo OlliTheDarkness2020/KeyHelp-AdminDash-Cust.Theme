@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="{{ _app.language }}" dir="{{ _app.text_direction }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {# Stop microsoft edge to style numbers, which it assumes are telephone numbers #}
+    <meta name="format-detection" content="telephone=no">
+
+    {% if _white_label.favicon %}
+        <link type="image/x-icon" rel="shortcut icon" href="{{ _white_label.favicon }}">
+    {% else %}
+        <link rel="apple-touch-icon" sizes="180x180" href="/theme/otd/assets/img/favicon/apple-touch-icon.png?v=ngk7O7gqA9">
+        <link rel="icon" type="image/png" sizes="32x32" href="/theme/otd/assets/img/favicon/favicon-32x32.png?v=ngk7O7gqA9">
+        <link rel="icon" type="image/png" sizes="16x16" href="/theme/otd/assets/img/favicon/favicon-16x16.png?v=ngk7O7gqA9">
+        <link rel="manifest" href="/theme/otd/assets/img/favicon/site.webmanifest?v=ngk7O7gqA9">
+        <link rel="mask-icon" href="/theme/otd/assets/img/favicon/safari-pinned-tab.svg?v=ngk7O7gqA9" color="#2b5797">
+        <link rel="shortcut icon" href="/theme/otd/assets/img/favicon/favicon.ico?v=ngk7O7gqA9">
+        <meta name="apple-mobile-web-app-title" content="KeyHelp">
+        <meta name="application-name" content="KeyHelp">
+        <meta name="msapplication-TileColor" content="#2b5797">
+        <meta name="msapplication-config" content="/theme/otd/assets/img/favicon/browserconfig.xml?v=ngk7O7gqA9">
+        <meta name="theme-color" content="#ffffff">
+    {% endif %}
+
+    <title>{{ _app.page_title }}</title>
+    <link rel="stylesheet" href="/theme/otd/assets/css/style{{ _app.theme.is_dark_mode ? '-dark' }}{{ _app.text_direction == 'rtl' ? '-rtl' }}.css?{{ _app.cache_control }}">
+    <link rel="stylesheet" href="/theme/otd/assets/css/otd.css?{{ _app.cache_control }}">
+    <link rel="stylesheet" href="/theme/otd/assets/css/bulma-tooltip.min.css?{{ _app.cache_control }}">
+    <link rel="stylesheet" href="/theme/otd/assets/css/bulma-quickview.min.css?{{ _app.cache_control }}">
+
+    {% block page_css %}{% endblock %}
+
+    {% if _white_label.css %}
+        <style>
+            {{ _white_label.css|raw }}
+        </style>
+    {% endif %}
+</head>
+<body class="{{ _app.theme.is_dark_mode ? 'dark-mode' : 'default-mode' }}">
+    {% block body_content %}{% endblock %}
+
+    <script>
+        var hash = {{ js_hash|raw }};
+        Object.freeze(hash);
+    </script>
+    <script src="/theme/otd/assets/vendor/jquery/jquery.min.js?{{ _app.cache_control }}"></script>
+    <script src="/theme/otd/assets/vendor/perfect-scrollbar/perfect-scrollbar.min.js?{{ _app.cache_control }}"></script>
+    <script src="/theme/otd/assets/vendor/chartjs/chart.min.js?{{ _app.cache_control }}"></script>
+    <script src="/theme/otd/assets/vendor/handlebars/handlebars.min.js?{{ _app.cache_control }}"></script>
+    <script src="/theme/otd/assets/vendor/moment/moment.min.js?{{ _app.cache_control }}"></script>
+    <script src="/theme/otd/assets/vendor/tippy/popper.min.js?{{ _app.cache_control }}"></script>
+    <script src="/theme/otd/assets/vendor/tippy/tippy.min.js?{{ _app.cache_control }}"></script>
+    <script src="/theme/otd/assets/vendor/select2/select2.min.js?{{ _app.cache_control }}"></script>
+    <script src="/theme/otd/assets/vendor/select2/i18n/{{ _app.language }}.js?{{ _app.cache_control }}"></script>
+    <script src="/theme/otd/assets/js/functions.js?{{ _app.cache_control }}"></script>
+    <script src="/theme/otd/assets/js/main.js?{{ _app.cache_control }}"></script>
+    <script src="/theme/otd/assets/js/bulma-quickview.min.js?{{ _app.cache_control }}"></script>
+    <script src="/theme/otd/assets/js/vue.min.js?{{ _app.cache_control }}"></script>
+
+    {% block page_scripts %}{% endblock %}
+
+    {% if _white_label.javascript %}
+        <script type="text/javascript">
+            {{ _white_label.javascript|raw }}
+        </script>
+    {% endif %}
+<div class="modal"> </div>    
+</body>
+</html>

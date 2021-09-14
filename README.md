@@ -2,6 +2,24 @@
 
 <hr>
 
+<h2> <b> <u> Änderungen 14.09.2021 ( Dev-Version 21.2.1 ) </u> </b> </h2>
+
+<b> Dash Panel </b>
+<ul>
+
+<li> Update auf KeyHelp 21.2 </li>
+
+</ul>
+
+<b> GitHub </b>
+<ul>
+
+<li>  </li>
+
+</ul>
+
+<hr>
+
 <h2> <b> <u> Änderungen 14.09.2021 ( Dev-Version 21.1.2 ) </u> </b> </h2>
 
 <b> Dash Panel </b>
