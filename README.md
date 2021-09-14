@@ -4,6 +4,24 @@
 
 <hr>
 
+<h2> <b> <u> Änderungen 14.09.2021 ( Version 21.2.1 ) </u> </b> </h2>
+
+<b> Dash Panel </b>
+<ul>
+
+<li> Update auf KH Panel 21.2 </li>
+
+</ul>
+
+<b> GitHub </b>
+<ul>
+
+<li> - </li>
+
+</ul>
+
+<hr>
+
 <h2> <b> <u> Änderungen 18.07.2021 ( Version 21.1.1 ) </u> </b> </h2>
 
 <b> Dash Panel </b>
