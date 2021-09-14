@@ -1,0 +1,21 @@
+{% extends 'base/intern.twig' %}
+
+
+
+{% block content %}
+
+    {% include 'includes/delete_page.twig' with {
+        '_action': '?page=' ~ _app.page ~ '&action=delete',
+        '_back_page': _app.page,
+        '_config': {
+            'launch_interval': {
+                'label': launch_interval
+            },
+            'repository': {
+                'label': repository
+            },
+        },
+        '_items': _backup_schedules
+    } %}
+
+{% endblock %}

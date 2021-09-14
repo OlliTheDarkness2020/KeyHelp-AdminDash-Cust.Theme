@@ -1,0 +1,113 @@
+{% extends 'base/intern.twig' %}
+
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+    </p>
+
+    {# Button line #}
+    {% include 'includes/index_page_button_line.twig' with ({
+        '_add_btn_label': add_button,
+        '_add_btn_url': '?page=' ~ _app.page ~ '&action=add',
+        '_form_id': 'form-custom-buttons'
+    }) %}
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% if _buttons is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'includes/scroll_table_container_buttons.twig' %}
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                        <thead>
+                            <tr>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'label' } %}>
+                                    {{ label }}
+                                </th>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'url' } %}>
+                                    {{ url }}
+                                </th>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'area' } %}>
+                                    {{ area }}
+                                </th>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'category' } %}>
+                                    {{ category }}
+                                </th>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'position' } %}>
+                                    {{ position }}
+                                </th>
+                                <th class="is-narrow">
+                                    {{ options }}
+                                </th>
+                                <th class="is-narrow">
+                                    <label>
+                                        <input class="app-check-all" type="checkbox">
+                                    </label>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <form id="form-custom-buttons" action="?page={{ _app.page }}&action=delete" method="post">
+                                {% for item in _buttons %}
+                                    <tr>
+                                        <td>
+                                            {{ item.label }}
+                                        </td>
+                                        <td>
+                                            {{ item.url }}
+                                        </td>
+                                        <td>
+                                            {{ item.area }}
+                                        </td>
+                                        <td>
+                                            {{ item.category }}
+                                        </td>
+                                        <td>
+                                            {{ item.position }}
+                                        </td>
+                                        <td class="is-narrow">
+                                            {% include 'includes/icon.twig' with {
+                                                '_type': 'edit',
+                                                '_url': '?page=' ~ _app.page ~ '&action=edit&id=' ~ item.id
+                                            } %}
+
+                                            {% include 'includes/icon.twig' with {
+                                                '_type': 'delete',
+                                                '_url': '?page=' ~ _app.page ~ '&action=delete&id=' ~ item.id
+                                            } %}
+                                        </td>
+                                        <td>
+                                            {{ item.checkbox|raw }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </form>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="42" class="has-text-grey-light">
+                                    {{ _buttons|length }} {{ items_total }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+    {# Back #}
+    {% include 'includes/cta.twig' with { '_back': { 'target': 'admin_configuration' } } %}
+
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends 'base/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_backup_restore.js?{{ _app.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {% include 'includes/card_start.twig' %}
+
+        <form action="?page={{ _app.page }}&action={{ _action }}" method="post" autocomplete="off">
+            <input type="hidden" name="submit" value="1">
+            <input type="hidden" name="id" value="{{ _id }}">
+
+            {% for category_id, category in _categories  %}
+                <div class="has-margin-bottom-large app-restore-category" data-category="{{ category_id }}">
+                    {{ forms.label_wrapped({
+                        'label': category.label,
+                        'help': category_id == 'paths' ? category_search_help : category_help ~ '<br>' ~ category_search_help
+                    }) }}
+
+                    {% if category.items is empty %}
+                        <div class="has-text-grey has-text-centered">
+                            - {{ no_items_available }} -
+                        </div>
+                    {% else %}
+                        {{ forms.input_wrapped({
+                            'placeholder': search,
+                            'name': 'search',
+                            'type': 'search',
+                            'icon': 'fas fa-search',
+                        }) }}
+
+                        <div class="card is-card-on-card">
+                            <div class="card-content has-padding-medium app-elements" style="height: 200px; overflow-y: scroll;">
+                                {% for item in category.items %}
+
+                                    {% set label = item.label %}
+
+                                    {% if category_id == 'paths' and _app.area == 'user' %}
+                                        {% if item.is_inside_home %}
+                                            {% set label = ' <span class="has-text-grey-light">&lt;' ~ home_directory ~ '&gt</span> ' ~ label %}
+                                        {% else %}
+                                            {% set label = label ~ ' <span class="has-text-grey-light app-tooltip" data-tippy-content="' ~ no_restore_at_origin ~ '">(*)</span> ' %}
+                                        {% endif %}
+                                    {% endif %}
+
+                                    {{ forms.checkbox({
+                                        'label': label,
+                                        'value': item.name,
+                                        'name': category_id ~ '[]',
+                                        'is_checked': item.is_checked,
+                                        'is_disabled': item.is_disabled
+                                    }) }}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <p class="has-text-right has-text-grey">
+                            <small>
+                                <a href="javascript:void(0)" class="app-select-filtered">{{ select_filtered }}</a>
+                                /
+                                <a href="javascript:void(0)" class="app-select-all">{{ select_all }}</a>
+                                /
+                                <a href="javascript:void(0)" class="app-deselect-all">{{ deselect_all }}</a>
+                            </small>
+                        </p>
+
+                        {% if category_id == 'paths' %}
+
+                            {{ forms.checkbox({
+                                'label': restore_single_path,
+                                'value': '1',
+                                'name': 'is_restore_single_path',
+                                'is_checked': _is_restore_single_path,
+                            }) }}
+
+                            <div class="app-show-with-restore-single-path has-padding-left-medium" style="display: none">
+                                {{ forms.input_wrapped({
+                                    'help': restore_single_path_help,
+                                    'name': 'restore_single_path',
+                                    'value': _restore_single_path,
+                                    'type': 'text',
+                                    'addons': {
+                                        'left': [{
+                                            'type': 'select',
+                                            'select': {
+                                                'name': 'restore_single_path_prepend',
+                                                'options': _paths_dropdown,
+                                                'selected': _restore_single_path_prepend
+                                            }
+                                        }]
+                                    }
+                                }) }}
+                            </div>
+
+                            <div class="app-show-with-paths" style="display: none">
+                                {{ forms.radio_wrapped({
+                                    'label': restore_location,
+                                    'options': [
+                                        {
+                                            'label': original_path,
+                                            'name': 'restore_location',
+                                            'value': 'original',
+                                            'is_checked': _restore_location == 'original'
+                                        },
+                                        {
+                                            'label': alternative_path,
+                                            'name': 'restore_location',
+                                            'value': 'alternative',
+                                            'is_checked': _restore_location == 'alternative'
+                                        },
+                                    ]
+                                }) }}
+
+                                <div class="app-show-with-alternative-restore-path has-padding-left-medium" style="display: none">
+                                    {% if _app.area == 'admin' %}
+
+                                        {{ forms.input_wrapped({
+                                            'help': alternative_path_help_admin,
+                                            'name': 'alternative_restore_path',
+                                            'value': _alternative_restore_path,
+                                            'type': 'text',
+                                            'is_required_fake': true,
+                                        }) }}
+
+                                    {% else %}
+
+                                        {% include 'includes/form_browse_directory.twig' with {
+                                            '_is_empty_label': true,
+                                            '_help': alternative_path_help_user,
+                                            '_name': 'alternative_restore_path',
+                                            '_value': _alternative_restore_path,
+                                            'is_required_fake': true,
+                                            '_username': _user.username,
+                                            '_purpose': 'backup_restore'
+                                        }%}
+
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            {% include 'includes/cta.twig' with { '_back': { 'target': _app.page ~ '&id=' ~ _id }, '_confirm': true } %}
+
+        </form>
+
+    {% include 'includes/card_end.twig' %}
+{% endblock %}
