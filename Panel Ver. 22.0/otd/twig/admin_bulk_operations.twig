@@ -1,0 +1,48 @@
+{% extends 'base/intern.twig' %}
+
+{% block page_scripts %}
+    <script src="/theme/otd/assets/js/page_backup.js?{{ _app.cache_control }}"></script>
+{% endblock %}
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+    </p>
+
+    {# List features #}
+    {% include 'includes/card_start_stacked.twig' with {
+        '_label': feature_overview,
+        '_icon': 'fa-solid fa-diagram-project',
+    } %}
+
+    {% set features = [{
+        'title': update_php_interpreter,
+        'desc': update_php_interpreter_help,
+        'action': 'php'
+    },{
+        'title': rewrite_client_configs,
+        'desc': rewrite_client_configs_help,
+        'action': 'config'
+    }] %}
+
+    <div class="content">
+        {% for item in features %}
+            <div {{ not loop.first ? 'class="has-margin-top-large"' }}>
+                <h2 class="title is-6 has-margin-bottom-small">{{ item.title }}</h2>
+                <p>{{ item.desc|raw }}</p>
+                {{ forms.button({
+                    'label': continue,
+                    'icon': 'fa-solid fa-angles-right',
+                    'url': '?page=' ~ _app.page ~ '&action=' ~ item.action
+                }) }}
+            </div>
+        {% endfor %}
+    </div>
+
+    {% include 'includes/card_end_stacked.twig' %}
+
+{% endblock %}

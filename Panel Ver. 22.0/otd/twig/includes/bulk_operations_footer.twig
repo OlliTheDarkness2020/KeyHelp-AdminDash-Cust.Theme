@@ -1,0 +1,19 @@
+{{ forms.select_wrapped({
+    'label': bulk_scope,
+    'help': bulk_scope_help,
+    'name': 'client_scope',
+    'options': _client_scope_options,
+    'selected': _client_scope,
+}) }}
+
+<div class="app-show-with-client-accounts-list" style="display: none">
+    {{ forms.textarea_wrapped({
+        'help': client_help,
+        'name': 'client_usernames',
+        'value': _client_usernames,
+        'rows': 5,
+        'is_auto_resize': true
+    }) }}
+</div>
+
+{% include 'includes/cta.twig' with { '_back': { 'target': _app.page }, '_confirm': true } %}

@@ -1,0 +1,79 @@
+{% extends 'base/intern.twig' %}
+
+
+
+{% block page_css %}
+    <link rel="stylesheet" href="/theme/otd/assets/vendor/codemirror/codemirror.min.css?{{ _app.cache_control }}">
+    <link rel="stylesheet" href="/theme/otd/assets/vendor/codemirror/addon/display/fullscreen.css?{{ _app.cache_control }}">
+    <link rel="stylesheet" href="/theme/otd/assets/vendor/codemirror/theme/material-darker.css?{{ _app.cache_control }}">
+{% endblock %}
+
+
+
+{% block page_scripts %}
+    <script src="/theme/otd/assets/vendor/codemirror/codemirror.min.js?{{ _app.cache_control }}"></script>
+    <script src="/theme/otd/assets/vendor/codemirror/addon/display/fullscreen.js?{{ _app.cache_control }}"></script>
+    <script src="/theme/otd/assets/vendor/codemirror/mode/xml.js?{{ _app.cache_control }}"></script>
+    <script src="/theme/otd/assets/vendor/codemirror/mode/htmlmixed.js?{{ _app.cache_control }}"></script>
+    <script src="/theme/otd/assets/vendor/codemirror/mode/css.js?{{ _app.cache_control }}"></script>
+
+    <script>
+        var editor = initCodemirror($('textarea[name="code"]')[0], '50em', 'text/html');
+    </script>
+{% endblock %}
+
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+    </p>
+
+    {# Settings #}
+    {% include 'includes/card_start.twig' with { '_is_wide': true } %}
+        <form action="?page={{ _app.page }}&action=update" method="post">
+
+            {{ forms.textarea_wrapped({
+                'name': 'code',
+                'label': code,
+                'help': code_help,
+                'rows': 20,
+                'value': _code,
+                'full_screen': { 'start': full_screen, 'end': exit_full_screen }
+            }) }}
+
+            {% include 'includes/cta.twig' with { '_back': { 'target': 'admin_configuration' }, '_reset': _has_custom_settings, '_confirm': true } %}
+
+        </form>
+    {% include 'includes/card_end.twig' %}
+
+    {# Modal | Reset ================================================================================================ #}
+
+    {% if _has_custom_settings %}
+        <form action="?page={{ _app.page }}&action=reset" method="post">
+            <div id="app-modal-reset-settings" class="modal">
+                <div class="modal-background"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">{{ reset_settings }}</p>
+                        <button class="delete app-modal-close" type="button"></button>
+                    </header>
+                    <div class="modal-card-body">
+                        <p class="has-text-centered">
+                            {{ reset_settings_confirmation }}
+                        </p>
+                    </div>
+                    <footer class="modal-card-foot">
+                        {{ forms.button({'label': yes, 'style': 'primary' }) }}
+                        {{ forms.button({'label': cancel, 'class': 'app-modal-close', 'type': 'button' }) }}
+                    </footer>
+                </div>
+            </div>
+        </form>
+    {% endif %}
+
+{% endblock %}

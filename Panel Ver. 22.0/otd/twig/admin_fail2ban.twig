@@ -1,0 +1,155 @@
+{% extends 'base/intern.twig' %}
+
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+    </p>
+
+    <p class="has-margin-bottom-large">
+        {{ list_of_active_jails }}
+
+        {% if _jails is empty %}
+            <span class="has-text-grey-light">- {{ no_items_available }} -</span>
+        {% else %}
+            {% for jail in _jails %}
+                <strong>{{ jail.name }}</strong> ({{ jail.banned_count }}x),
+            {% endfor %}
+        {% endif %}
+    </p>
+
+    {# Button line #}
+    <div class="level">
+        <div class="level-left">
+            <div class="level-item">
+            </div>
+        </div>
+        <div class="level-right">
+            <div class="level-item">
+                {{ forms.button({
+                    'label': unban_selected,
+                    'style': 'secondary',
+                    'modal': 'app-modal-unban-selected'
+                }) }}
+            </div>
+            <div class="level-item">
+                {{ forms.button({
+                    'label': unban_all,
+                    'style': 'secondary',
+                    'modal': 'app-modal-unban-all'
+                }) }}
+            </div>
+        </div>
+    </div>
+
+    {# Viewing options #}
+    {% include 'includes/viewing_options.twig' with ({
+        '_search': _search,
+        '_search_options': _search_options,
+        '_search_options_selected': _search_options_selected,
+    }) %}
+    
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% if _banned_ips is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'includes/scroll_table_container_buttons.twig' %}
+                <form id="form-fail2ban" action="?page={{ _app.page }}&action=unban_selected" method="post">
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                            <thead>
+                                <tr>
+                                    <th {% include 'includes/table_sorting.twig' with { '_column': 'ip' } %}>
+                                        {{ ip_address }}
+                                    </th>
+                                    <th {% include 'includes/table_sorting.twig' with { '_column': 'jail' } %}>
+                                        {{ blocked_by_jail }}
+                                    </th>
+                                    <th class="is-narrow">
+                                        <input class="app-check-all" type="checkbox">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in _banned_ips %}
+                                    <tr>
+                                        <td>
+                                            {{ item.ip }}
+                                        </td>
+                                        <td>
+                                            {{ item.jail }}
+                                        </td>
+                                        <td>
+                                            {{ item.checkbox|raw }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            <tfoot>
+                                <tr>
+                                    <td colspan="42" class="has-text-grey-light">
+                                        {{ _banned_ips|length }} {{ items }} / {{ _items_total }} {{ items_total }}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    {# Pagination #}
+    {% include 'includes/pagination.twig' with { 'params': _pagination } %}
+
+    {# Modal | Unban selected #}
+    <div id="app-modal-unban-selected" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">{{ unban_selected }}</p>
+                <button class="delete app-modal-close" type="button"></button>
+            </header>
+            <div class="modal-card-body">
+                <p class="has-text-centered">
+                    {{ are_you_sure_to_unban_singular }}
+                </p>
+            </div>
+            <footer class="modal-card-foot">
+                {{ forms.button({'label': yes, 'style': 'primary', 'data': { 'submit-form': 'form-fail2ban' } }) }}
+                {{ forms.button({'label': cancel, 'class': 'app-modal-close', 'type': 'button' }) }}
+            </footer>
+        </div>
+    </div>
+
+    {# Modal | Unban all #}
+    <form action="?page={{ _app.page }}&action=unban_all" method="post">
+        <div id="app-modal-unban-all" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">{{ unban_all }}</p>
+                    <button class="delete app-modal-close" type="button"></button>
+                </header>
+                <div class="modal-card-body">
+                    <p class="has-text-centered">
+                        {{ are_you_sure_to_unban_plural }}
+                    </p>
+                </div>
+                <footer class="modal-card-foot">
+                    {{ forms.button({'label': yes, 'style': 'primary' }) }}
+                    {{ forms.button({'label': cancel, 'class': 'app-modal-close', 'type': 'button' }) }}
+                </footer>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}

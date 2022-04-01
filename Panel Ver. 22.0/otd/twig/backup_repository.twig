@@ -1,0 +1,165 @@
+{% extends 'base/intern.twig' %}
+
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ repository_management_help|raw }}
+    </p>
+
+    {# Button line #}
+    {% include 'includes/index_page_button_line.twig' with ({
+        '_add_btn_label': add_repository,
+        '_add_btn_url': '?page=' ~ _app.page ~ '&action=add',
+        '_form_id': 'form-backup-repository-index'
+    }) %}
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% if _repos is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'includes/scroll_table_container_buttons.twig' %}
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                        <thead>
+                            <tr>
+                                <th class="is-narrow" {% include 'includes/table_sorting.twig' with { '_column': 'status' } %}>
+                                    S
+                                </th>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'name' } %}>
+                                    {{ name }}
+                                </th>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'storage_type_sort' } %}>
+                                    {{ storage_type }}
+                                </th>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'snapshot_count' } %}>
+                                    {{ snapshots }}
+                                </th>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'size_sort' } %} colspan="2">
+                                    {{ size }}
+                                </th>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'created_at_sort' } %}>
+                                    {{ created_at }}
+                                </th>
+                                <th class="is-narrow">
+                                    {{ options }}
+                                </th>
+                                <th class="is-narrow">
+                                    <label>
+                                        <input class="app-check-all" type="checkbox">
+                                    </label>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <form id="form-backup-repository-index" action="?page={{ _app.page }}&action=delete" method="post">
+                                {% for item in _repos %}
+                                    <tr>
+                                        <td class="has-padding-x-xsmall">
+                                            {% include 'includes/icon.twig' with { '_type': item.status } %}
+                                        </td>
+                                        <td>
+                                            {{ item.name }}
+                                        </td>
+                                        <td class="has-no-wrap">
+                                            {% if item.storage_type == 'local' %}
+                                                <span class="icon is-medium has-text-grey">
+                                                    <i class="fa-solid fa-hard-drive"></i>
+                                                </span>
+                                            {% elseif item.storage_type == 'dropbox' %}
+                                                <span class="icon is-medium" style="color: #3d9ae8">
+                                                    <i class="fa-brands fa-dropbox"></i>
+                                                </span>
+                                            {% elseif item.storage_type == 'custom' %}
+                                                <span class="icon is-medium has-text-grey">
+                                                    <i class="fa-solid fa-gear"></i>
+                                                </span>
+                                            {% else %}
+                                                <span class="icon is-medium has-text-grey">
+                                                    <i class="fa-solid fa-cloud"></i>
+                                                </span>
+                                            {% endif %}
+                                            {{ item.storage_type_label }}
+                                        </td>
+                                        <td class="has-no-wrap">
+                                            {{ item.snapshot_count }}{{ item.max_snapshots ? ' / ' ~ item.max_snapshots }}
+                                        </td>
+                                        <td class="has-no-wrap">
+                                            {{ item.size }}
+                                        </td>
+                                        <td class="is-narrow">
+                                            {% set _tippy_content %}
+                                                <table class="table is-narrow is-nested-table">
+                                                    <tr>
+                                                        <th>{{ on_file_system }}</th>
+                                                        <td class="has-no-wrap">{{ item.size }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>{{ after_restore_of_all_snapshots}}</th>
+                                                        <td class="has-no-wrap">{{ item.size_after_restore }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>{{ saved_storage_space }}</th>
+                                                        <td class="has-no-wrap">{{ item.saved_space }}</td>
+                                                    </tr>
+                                                </table>
+                                            {% endset %}
+
+                                            <div class="app-tooltip-mandatory" data-tippy-maxWidth="500px" data-tippy-content="{{ _tippy_content|escape('html') }}">
+                                                <span class="icon has-text-grey">
+                                                    <i class="fa-solid fa-circle-info"></i>
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td class="has-no-wrap">
+                                            {{ item.created_at }}
+                                        </td>
+                                        <td class="is-narrow">
+                                            {% include 'includes/icon.twig' with {
+                                                '_type': 'edit',
+                                                '_url': '?page=' ~ _app.page ~ '&action=edit&id=' ~ item.id
+                                            } %}
+
+                                            {% include 'includes/icon.twig' with {
+                                                '_type': 'restore',
+                                                '_url': '?page=backup_restore&action=select&id_repository=' ~ item.id
+                                            } %}
+
+                                            {% include 'includes/icon.twig' with {
+                                                '_type': 'delete',
+                                                '_url': '?page=' ~ _app.page ~ '&action=delete&id=' ~ item.id
+                                            } %}
+                                        </td>
+                                        <td>
+                                            {{ item.checkbox|raw }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </form>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="42" class="has-text-grey-light">
+                                    {{ _repos|length }} {{ items_total }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+    {# Back #}
+    {% include 'includes/cta.twig' with { '_back': { 'target': 'backup' } } %}
+
+{% endblock %}

@@ -1,0 +1,21 @@
+Version:    5.10.2
+
+Releases:   https://www.tiny.cloud/get-tiny/self-hosted/
+            https://www.tiny.cloud/get-tiny/language-packages/
+            (Does not send notifications via Github)
+
+Homepage:   https://www.tiny.cloud/
+
+Update:     1)      Download TinyMCE Community
+
+            2)      Replace the full content of the folder
+
+            3)      Download the language pack files from the URL above and put them into /langs/.
+            3.1)    Rename language packs to match our language names in KeyHelp
+                    Example:
+                        "fr_FR" -> "fr",
+                        "sv_SE" -> "sv",
+                        "hu_HU" -> "hu",
+            3.2)    If the language package is not available for download, use the one from the last KeyHelp release
+            3.3)    Also rename within the files itself tinymce.addI18n('hu_HU' -> tinymce.addI18n('hu'
+

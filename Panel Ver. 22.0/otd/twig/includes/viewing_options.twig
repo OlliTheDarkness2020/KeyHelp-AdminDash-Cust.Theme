@@ -1,0 +1,68 @@
+{% import "macros/forms.twig" as forms %}
+
+<div class="card has-margin-bottom-medium">
+    <div class="card-content">
+        <div class="level">
+            <div class="level-left">
+                <div class="level-item">
+                    <strong>{{ viewing_options }}</strong>
+                </div>
+            </div>
+            <div class="level-right">
+                <div class="level-item">
+                    <form action="?page={{ _app.page }}" method="post">
+                        <input type="hidden" name="update_view_search" value="1">
+                        {{ forms.input({
+                            'name': 'search',
+                            'type': 'search',
+                            'value': _search,
+                            'addons': {
+                                'left': {
+                                    'type': 'select',
+                                    'select': {
+                                        'name': 'search_option',
+                                        'options': _search_options,
+                                        'selected': _search_options_selected,
+                                    }
+                                },
+                                'right' : {
+                                    'button': {
+                                        'label': search,
+                                        'icon': 'fa-solid fa-magnifying-glass'
+                                    }
+                                }
+                            }
+                        }) }}
+                    </form>
+                </div>
+                {% if _customize_view_options %}
+                    <div class="level-item">
+                        {% set _viewing_options_menu %}
+                            <form action="?page={{ _app.page }}" method="post">
+                                <input type="hidden" name="update_view_options" value="1">
+
+                                <div class="has-text-left has-no-wrap has-padding-small">
+                                    {{ forms.checkbox_wrapped({
+                                        'options': _customize_view_options
+                                    }) }}
+                                    <div class="has-text-centered">
+                                        {{ forms.button({
+                                            'label': save,
+                                            'style': 'primary',
+                                        }) }}
+                                    </div>
+                                </div>
+                            </form>
+                        {% endset %}
+                        <div class="app-tooltip-click" data-tippy-content="{{ _viewing_options_menu|escape('html') }}">
+                            {{ forms.button({
+                                'label': customize_view,
+                                'type': 'button',
+                            }) }}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

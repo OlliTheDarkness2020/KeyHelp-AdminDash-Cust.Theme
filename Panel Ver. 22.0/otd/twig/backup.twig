@@ -1,0 +1,206 @@
+{% extends 'base/intern.twig' %}
+
+
+
+{% block page_scripts %}
+    <script src="/theme/otd/assets/js/page_backup.js?{{ _app.cache_control }}"></script>
+{% endblock %}
+
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ restic_help|raw }}
+    </p>
+
+    {# Features #}
+    {% include 'includes/card_start_stacked.twig' with {
+        '_label': backup_features,
+        '_icon': 'fa-solid fa-diagram-project',
+        '_is_collapsible': true,
+        '_cookie_name': 'backup_features'
+     } %}
+        <div class="columns">
+            <div class="column is-half">
+                <div class="content">
+                    <div>
+                        <h2 class="title is-6 has-margin-bottom-small">{{ create_backup }}</h2>
+                        <p>{{ create_backup_desc|raw }}</p>
+
+                        <div class="buttons">
+                            {{ forms.button({
+                                'label': create_backup,
+                                'icon': 'fa-solid fa-box-archive',
+                                'url': '?page=backup_create'
+                            }) }}
+
+                            {{ forms.button({
+                                'label': schedule_backups,
+                                'icon': 'fa-solid fa-calendar-days',
+                                'url': '?page=backup_schedule'
+                            }) }}
+                        </div>
+                    </div>
+
+                    <div class="has-margin-top-large">
+                        <h2 class="title is-6 has-margin-bottom-small">{{ restore_backup }}</h2>
+                        <p>{{ restore_backup_desc|raw }}</p>
+
+                        {{ forms.button({
+                            'label': restore_backup,
+                            'icon': 'fa-solid fa-clock-rotate-left',
+                            'url': '?page=backup_restore&action=select'
+                        }) }}
+                    </div>
+                </div>
+            </div>
+            <div class="column is-half">
+                <div class="content">
+                    <div>
+                        <h2 class="title is-6 has-margin-bottom-small">{{ repository_management }}</h2>
+                        <p>{{ repository_management_desc|raw }}</p>
+
+                        {{ forms.button({
+                            'label': repository_management,
+                            'icon': 'fa-solid fa-folder-open',
+                            'url': '?page=backup_repository'
+                        }) }}
+                    </div>
+
+                    {% if not _white_label.is_hide_keyweb_ads %}
+                        <div class="columns has-margin-top-large">
+                            <div class="column is-narrow">
+                                <a href="{{ _keydisc_url }}" target="_blank" rel="nofollow noopener noreferrer">
+                                    <img class="svg-keydisc" src="theme/otd/assets/img/{{ _app.theme.is_dark_mode ? 'dark/' }}keydisc.svg">
+                                </a>
+                            </div>
+                            <div class="column has-mobile-top-padding-none">
+                                {{ ad_keydisc_text|raw }}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% include 'includes/card_end_stacked.twig' %}
+
+
+    {# Latest events #}
+    {% include 'includes/card_start_stacked.twig' with { '_label': latest_events, '_icon': 'fa-solid fa-list-check', '_has_margin_top': true } %}
+        {% if _latest_events is empty %}
+            <div class="has-text-centered has-text-grey">
+                - {{ no_items_available }} -
+            </div>
+        {% else %}
+            {% include 'includes/scroll_table_container_buttons.twig' %}
+
+            <div class="table-container">
+                <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                    <thead>
+                        <tr>
+                            <th {% include 'includes/table_sorting.twig' with { '_column': 'created_at' } %}>
+                                {{ started_on }}
+                            </th>
+                            <th {% include 'includes/table_sorting.twig' with { '_column': 'operation' } %}>
+                                {{ operation }}
+                            </th>
+                            <th {% include 'includes/table_sorting.twig' with { '_column': 'state' } %}>
+                                {{ status }}
+                            </th>
+                            <th {% include 'includes/table_sorting.twig' with { '_column': 'state' } %}>
+                                {{ messages }}
+                            </th>
+                            <th {% include 'includes/table_sorting.twig' with { '_column': 'repository' } %}>
+                                {{ repository }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in _latest_events %}
+                            <tr>
+                                <td class="app-messages-content" style="display:none">
+                                    {% if item.issues %}
+                                        <ul class="list">
+                                        {% for issue in item.issues %}
+                                            <li class="list-item">{{ issue|nl2br }}</li>
+                                        {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </td>
+
+                                <td class="has-no-wrap">
+                                    {{ item.created_at }}
+                                </td>
+                                <td class="has-no-wrap">
+                                    {% include 'includes/icon_backup.twig' with { '_type': 'type_' ~ item.type } %}
+                                    {{ item.type_label }}
+
+                                    {% if item.id_schedule %}
+                                        (<a href="?page=backup_schedule&action=edit&id={{ item.id_schedule }}">{{ scheduled_backup }}</a>)
+                                    {% endif %}
+                                </td>
+                                <td class="has-no-wrap">
+                                    {% include 'includes/icon_backup.twig' with { '_type': 'state_' ~ item.state } %}
+                                    {{ item.state_label }}
+                                    {{ item.progress ? ' (' ~ item.progress ~ ')' }}
+                                </td>
+                                <td>
+                                    {% if item.issues %}
+                                        <a class="app-modal-messages-trigger">
+                                            {{ messages }}
+                                        </a>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="?page=backup_repository&action=edit&id={{ item.id_repo }}">{{ item.repo }}</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="42" class="has-text-grey-light">
+                                {{ _latest_events|length }} {{ items_total }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        {% endif %}
+    {% include 'includes/card_end_stacked.twig' %}
+
+    {# Pagination #}
+    {% include 'includes/pagination.twig' with { 'params': _pagination } %}
+
+
+{#######################################################################################################################
+    Modal | Rename
+#######################################################################################################################}
+
+    <div id="app-modal-messages" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">{{ messages }}</p>
+                <button class="delete app-modal-close" type="button"></button>
+            </header>
+            <div class="modal-card-body">
+                <p class="has-margin-bottom-medium">
+                    {{ messages_were_logged }}
+                </p>
+
+                <div class="app-messages-content is-family-monospace is-size-7">
+                    <!-- filled by JS -->
+                </div>
+            </div>
+            <footer class="modal-card-foot">
+                {{ forms.button({'label': close, 'class': 'app-modal-close', 'type': 'button' }) }}
+            </footer>
+        </div>
+    </div>
+
+{% endblock %}

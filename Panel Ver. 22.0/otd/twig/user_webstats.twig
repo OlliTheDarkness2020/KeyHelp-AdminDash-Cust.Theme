@@ -1,0 +1,34 @@
+{% extends 'base/intern.twig' %}
+
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    <div class="columns">
+        <div class="column is-half">
+            {% include 'includes/card_start_stacked.twig' with { '_label': statistics, '_icon': 'fa-solid fa-chart-column' } %}
+                <p>{{ statistics_desc|raw }}</p>
+                <div class="has-text-centered has-margin-top-large">
+                    {{ forms.button({
+                        'label': show_statistics,
+                        'style': 'primary',
+                        'class': 'is-outlined',
+                        'url': '/webstats/' ~ _user.username,
+                        'is_new_tab': true,
+                    }) }}
+                </div>
+            {% include 'includes/card_end_stacked.twig' %}
+        </div>
+
+        <div class="column is-half">
+            {% include 'includes/card_start_stacked.twig' with { '_label': access_password, '_icon': 'fa-solid fa-key' } %}
+                <form action="?page=user_webstats&action=update_password" method="post">
+                    {% include 'includes/form_password.twig' with { '_leave_empty' : true } %}
+                    {% include 'includes/cta.twig' with { '_confirm': true } %}
+                </form>
+            {% include 'includes/card_end_stacked.twig' %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,327 @@
+{% extends 'base/intern.twig' %}
+
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {% if _app.area == 'admin' %}
+        <div class="level has-margin-bottom-medium">
+            <div class="level-left">
+            </div>
+            <div class="level-right">
+                <div class="level-item">
+                    {{ forms.button({
+                        'label': options,
+                        'style': 'primary',
+                        'class': 'is-outlined',
+                        'modal': 'app-modal-options'
+                    }) }}
+                </div>
+            </div>
+        </div>
+
+        <form action="?page={{ _app.page }}&action=update_options" method="post">
+            <input type="hidden" name="submit" value="true">
+
+            <div id="app-modal-options" class="modal">
+                <div class="modal-background"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">{{ options }}</p>
+                        <button class="delete app-modal-close" type="button"></button>
+                    </header>
+                    <div class="modal-card-body">
+
+                        {{ forms.checkbox_wrapped({
+                            'label': anonymize_ips,
+                            'help': anonymize_ips_help,
+                            'options': {
+                                'label': enabled,
+                                'name': 'anonymize_ips',
+                                'value': '1',
+                                'is_checked': _anonymize_ips
+                            }
+                        }) }}
+
+                        {{ forms.label_wrapped({
+                            'label': record_rotation,
+                            'has_small_margin': true,
+                        }) }}
+
+
+                        {{ forms.radio({
+                            'label': delete_by_period,
+                            'name': 'rotation',
+                            'value': 'by_period',
+                            'is_checked': _rotation == 'by_period'
+                        }) }}
+
+                        <div class="has-margin-left-medium has-margin-bottom-small">
+                            {{ forms.input({
+                                'type': 'number',
+                                'name': 'rotation_by_period',
+                                'value': _rotation_by_period,
+                            }) }}
+                        </div>
+
+                        {{ forms.radio({
+                            'label': delete_by_number,
+                            'name': 'rotation',
+                            'value': 'by_number',
+                            'is_checked': _rotation == 'by_number'
+                        }) }}
+
+                        <div class="has-margin-left-medium has-margin-bottom-small">
+                            {{ forms.input({
+                                'type': 'number',
+                                'name': 'rotation_by_number',
+                                'value': _rotation_by_number
+                            }) }}
+                        </div>
+
+                        {{ forms.radio({
+                            'label': delete_nothing,
+                            'name': 'rotation',
+                            'value': 'keep',
+                            'is_checked': _rotation == 'keep'
+                        }) }}
+
+                    </div>
+                    <footer class="modal-card-foot">
+                        {{ forms.button({'label': save, 'style': 'primary' }) }}
+                        {{ forms.button({'label': cancel, 'class': 'app-modal-close', 'type': 'button' }) }}
+                    </footer>
+                </div>
+            </div>
+        </form>
+    {% endif %}
+
+    {# Viewing options #}
+    <div class="card has-margin-bottom-medium">
+        <div class="card-content">
+            <div class="level">
+                <div class="level-left">
+                    <div class="level-item">
+                        <strong>{{ viewing_options }}</strong>
+                    </div>
+                </div>
+                <div class="level-right">
+                    <div class="level-item">
+                        <form action="?page={{ _app.page }}&action=update_view_search" method="post">
+                            {{ forms.input({
+                                'name': 'search',
+                                'type': 'search',
+                                'value': _search,
+                                'addons': {
+                                    'left': {
+                                        'type': 'select',
+                                        'select': {
+                                            'name': 'search_option',
+                                            'options': {
+                                                'all': all_fields,
+                                                'date': date,
+                                                'message': message,
+                                                'user': user,
+                                                'ip_address': ip_address,
+                                                'channel': channel,
+                                            },
+                                            'selected': _search_option,
+                                        }
+                                    },
+                                    'right' : {
+                                        'button': {
+                                            'label': search,
+                                            'icon': 'fa-solid fa-magnifying-glass'
+                                        }
+                                    }
+                                }
+                            }) }}
+                        </form>
+                    </div>
+
+                    <div class="level-item">
+                        {% set _viewing_options_menu %}
+                            <form action="?page={{ _app.page }}&action=update_view_options" method="post">
+                                <div class="has-text-left has-no-wrap has-padding-small">
+                                    {{ forms.checkbox_wrapped({
+                                        'label': show_log_levels,
+                                        'options': [{
+                                            'label': debug,
+                                            'name': 'levels[]',
+                                            'value': 'debug',
+                                            'is_checked': _show_debug
+                                        },{
+                                            'label': info,
+                                            'name': 'levels[]',
+                                            'value': 'info',
+                                            'is_checked': _show_info
+                                        },{
+                                            'label': notice,
+                                            'name': 'levels[]',
+                                            'value': 'notice',
+                                            'is_checked': _show_notice
+                                        },{
+                                            'label': warning,
+                                            'name': 'levels[]',
+                                            'value': 'warning',
+                                            'is_checked': _show_warning
+                                        },{
+                                            'label': error,
+                                            'name': 'levels[]',
+                                            'value': 'error',
+                                            'is_checked': _show_error
+                                        },{
+                                            'label': alert,
+                                            'name': 'levels[]',
+                                            'value': 'alert',
+                                            'is_checked': _show_alert
+                                        },{
+                                            'label': critical,
+                                            'name': 'levels[]',
+                                            'value': 'critical',
+                                            'is_checked': _show_critical
+                                        },{
+                                            'label': emergency,
+                                            'name': 'levels[]',
+                                            'value': 'emergency',
+                                            'is_checked': _show_emergency
+                                        }]
+                                    }) }}
+                                    <div class="has-text-centered">
+                                        {{ forms.button({
+                                            'label': save,
+                                            'style': 'primary',
+                                        }) }}
+                                    </div>
+                                </div>
+                            </form>
+                        {% endset %}
+
+                        <div class="app-tooltip-click" data-tippy-content="{{ _viewing_options_menu|escape('html') }}">
+                            {{ forms.button({
+                                'label': customize_view,
+                                'type': 'button',
+                            }) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% if _log_items is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'includes/scroll_table_container_buttons.twig' %}
+
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                        <thead>
+                            <tr>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'date' } %}>
+                                    {{ date }}
+                                </th>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'level' } %}>
+                                    {{ level }}
+                                </th>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'message' } %}>
+                                    {{ message }}
+                                </th>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'user' } %}>
+                                    {{ user }}
+                                </th>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'ip_address' } %}>
+                                    {{ ip_address }}
+                                </th>
+                                <th {% include 'includes/table_sorting.twig' with { '_column': 'channel' } %}>
+                                    {{ channel }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in _log_items %}
+                                <tr>
+                                    <td class="is-narrow">
+                                        {{ item.date_short }}
+                                    </td>
+                                    <td class="is-narrow">
+                                        {% if item.level_name == 'DEBUG' %}
+                                            <span class="icon is-medium">
+                                                <i class="fa-regular fa-circle"></i>
+                                            </span>
+                                            {{ debug }}
+                                        {% elseif item.level_name == 'INFO'  %}
+                                            <span class="icon is-medium">
+                                                <i class="fa-solid fa-circle has-text-info"></i>
+                                            </span>
+                                            {{ info }}
+                                        {% elseif item.level_name == 'NOTICE' %}
+                                            <span class="icon is-medium">
+                                                <i class="fa-solid fa-circle has-text-info"></i>
+                                            </span>
+                                            {{ notice }}
+                                        {% elseif item.level_name == 'WARNING' %}
+                                            <span class="icon is-medium">
+                                                <i class="fa-solid fa-circle has-text-warning"></i>
+                                            </span>
+                                            {{ warning }}
+                                        {% elseif item.level_name == 'ERROR' %}
+                                            <span class="icon is-medium">
+                                                <i class="fa-solid fa-circle has-text-danger"></i>
+                                            </span>
+                                            {{ error }}
+                                        {% elseif item.level_name == 'ALERT' %}
+                                            <span class="icon is-medium">
+                                                <i class="fa-solid fa-circle has-text-danger"></i>
+                                            </span>
+                                            {{ alert }}
+                                        {% elseif item.level_name == 'CRITICAL' %}
+                                            <span class="icon is-medium">
+                                                <i class="fa-solid fa-circle has-text-danger"></i>
+                                            </span>
+                                            {{ critical }}
+                                        {% elseif item.level_name == 'EMERGENCY' %}
+                                            <span class="icon is-medium">
+                                                <i class="fa-solid fa-circle has-text-danger"></i>
+                                            </span>
+                                            {{ emergency }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ item.message|nl2br }}
+                                    </td>
+                                    <td>
+                                        {{ item.user }}
+                                    </td>
+                                    <td>
+                                        {{ item.ip_address }}
+                                    </td>
+                                    <td class="is-narrow">
+                                        {{ item.channel }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="42" class="has-text-grey-light">
+                                    {{ _log_items|length }} {{ items }} / {{ _log_items_total }} {{ items_total }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {# Pagination #}
+    {% include 'includes/pagination.twig' with { 'params': _pagination } %}
+{% endblock %}
