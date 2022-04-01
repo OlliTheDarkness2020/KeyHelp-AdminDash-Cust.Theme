@@ -4,6 +4,34 @@
 
 <hr>
 
+<h2> <b> <u> Änderungen 01.04.2022 ( Version 22.0.1 ) </u> </b> </h2>
+
+<b> Dash Panel </b>
+<ul>
+
+<li> Update auf KH Panel 22.0 </li>
+
+</ul>
+
+<b> GitHub </b>
+<ul>
+
+<li> Struktur - Vorbereitung für Panel Ver. 22.0 </li>
+
+</ul>
+
+<b> Information </b>
+<ul>
+
+<p> Mit diesem Release, stelle ich mangels Nutzung und dem schnell steigendem Panel Umfangs, die weitere Entwicklung ein. </p>
+<p> Da ggf. nötige Anpassungen eig. schnell gemacht sind, sollte es kein Prob. sein es sich schnell selbst anzupassen. </p>
+<p> Bei Fragen helfe ich aber gern weiter. </p>
+<p> WICHTIG: Eine entfernung des Copyrights, egal ob sichtbar oder nicht sichtbar, ist untersagt ! </p>
+
+</ul>
+
+<hr>
+
 <h2> <b> <u> Änderungen 14.09.2021 ( Version 21.2.1 ) </u> </b> </h2>
 
 <b> Dash Panel </b>
